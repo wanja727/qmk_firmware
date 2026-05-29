@@ -33,6 +33,12 @@ jobs:
         with:
           submodules: recursive
 
+      # The qmk_cli container runs git as a different user than the checkout owner,
+      # so git refuses with "dubious ownership" and `qmk generate-version-h`
+      # (git describe) fails, breaking the Makefile. Mark the workspace as safe.
+      - name: Mark workspace as a safe git directory
+        run: git config --global --add safe.directory '*'
+
       - name: Compile ${{ matrix.name }}
         run: qmk compile -kb ${{ matrix.kb }} -km wanja727
 
