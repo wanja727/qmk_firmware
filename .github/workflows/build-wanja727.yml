@@ -1,0 +1,46 @@
+name: Build wanja727 Keychron firmware
+
+# Builds the wanja727 keymap for all four Keychron boards in the cloud and
+# uploads the compiled .bin/.hex files as downloadable artifacts.
+#
+# Triggers:
+#   - push that touches the shared user space or any wanja727 keymap
+#   - manual run from the Actions tab (workflow_dispatch)
+
+on:
+  push:
+    paths:
+      - 'users/wanja727/**'
+      - 'keyboards/keychron/**/keymaps/wanja727/**'
+      - '.github/workflows/build-wanja727.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: ghcr.io/qmk/qmk_cli
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { name: k7_max,  kb: keychron/k7_max/ansi/rgb }
+          - { name: k11_max, kb: keychron/k11_max/ansi_encoder/rgb }
+          - { name: k15_max, kb: keychron/k15_max/ansi_encoder/rgb }
+          - { name: v8_max,  kb: keychron/v8_max/ansi_encoder }
+    steps:
+      - name: Checkout (with submodules)
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Compile ${{ matrix.name }}
+        run: qmk compile -kb ${{ matrix.kb }} -km wanja727
+
+      - name: Upload firmware
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.name }}-wanja727
+          path: |
+            *.bin
+            *.hex
+          if-no-files-found: error
