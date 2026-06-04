@@ -49,6 +49,6 @@ enum wanja_keycodes {
 };
 
 // Shared hooks. Each board's keymap forwards process_record_user / matrix_scan_user here.
-// nav_layer is passed in because the NAV layer index differs per board.
-bool wanja_process_record(uint16_t keycode, keyrecord_t *record, uint8_t nav_layer);
+// nav_layer / mouse_layer are passed in because the layer indices differ per board.
+bool wanja_process_record(uint16_t keycode, keyrecord_t *record, uint8_t nav_layer, uint8_t mouse_layer);
 void wanja_matrix_scan(void);

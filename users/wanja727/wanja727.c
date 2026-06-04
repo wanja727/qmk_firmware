@@ -26,24 +26,22 @@ static bool    alt_tab_active = false;
 static uint8_t alt_tab_layer  = 0;
 
 // ---- Mouse "slow on Shift" state ----
-static uint8_t mouse_count = 0;     // number of mouse move/wheel keys currently held
-static bool    shift_down  = false;
-static bool    acl_applied = false; // is MS_ACL0 currently registered?
+// FN1(MOUSE) 레이어를 누르고 있는 동안 Shift 는 기존 동작 대신 "느린 속도 전용" 키로만 쓴다.
+static bool shift_down  = false;
+static bool acl_applied = false; // is MS_ACL0 currently registered?
 
-static void update_slow(void) {
-    // ACL0(느린 속도)는 "Shift + 마우스 이동 중"에 켜되, 끄는 것은 Shift 를 뗄 때만 한다.
-    // 방향키를 뗄 때(mouse_count 가 0이 되는 순간) ACL0 를 끄면, 그 방향키가 아직 살아있는
-    // 동안 속도가 기본값으로 복귀해 한 틱 더 튀어나가는 문제가 생기므로 그 시점엔 끄지 않는다.
-    if (shift_down && mouse_count > 0 && !acl_applied) {
+static void update_slow(uint8_t mouse_layer) {
+    bool want = shift_down && layer_state_is(mouse_layer);
+    if (want && !acl_applied) {
         register_code(MS_ACL0);
         acl_applied = true;
-    } else if (!shift_down && acl_applied) {
+    } else if (!want && acl_applied) {
         unregister_code(MS_ACL0);
         acl_applied = false;
     }
 }
 
-bool wanja_process_record(uint16_t keycode, keyrecord_t *record, uint8_t nav_layer) {
+bool wanja_process_record(uint16_t keycode, keyrecord_t *record, uint8_t nav_layer, uint8_t mouse_layer) {
     // --- Number row: tap = number, hold = F1~F12 ---
     if (keycode >= NUM_F1 && keycode <= NUM_F12) {
         uint8_t idx = (uint8_t)(keycode - NUM_F1);
@@ -101,32 +99,14 @@ bool wanja_process_record(uint16_t keycode, keyrecord_t *record, uint8_t nav_lay
         return false;
     }
 
-    // --- Mouse: track movement/wheel keys, make Shift = slow ---
-    switch (keycode) {
-        case MS_UP:
-        case MS_DOWN:
-        case MS_LEFT:
-        case MS_RGHT:
-        case MS_WHLU:
-        case MS_WHLD:
-        case MS_WHLL:
-        case MS_WHLR:
-            if (record->event.pressed) {
-                mouse_count++;
-            } else if (mouse_count) {
-                mouse_count--;
-            }
-            update_slow();
-            return true;
-        case KC_LSFT:
-        case KC_RSFT:
-            shift_down = record->event.pressed;
-            update_slow();
-            // While mousing, consume Shift so it only slows the cursor.
-            if (record->event.pressed && mouse_count > 0) {
-                return false;
-            }
-            return true;
+    // --- FN1(MOUSE) 홀드 중 Shift = 느린 속도 전용 ---
+    if (keycode == KC_LSFT || keycode == KC_RSFT) {
+        shift_down = record->event.pressed;
+        update_slow(mouse_layer);
+        if (layer_state_is(mouse_layer)) {
+            return false; // MOUSE 레이어에서는 Shift 를 OS 로 보내지 않고 속도 조절로만 사용
+        }
+        return true;
     }
 
     return true;
