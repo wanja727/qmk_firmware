@@ -1,2 +1,2 @@
-# Pure compiled keymap (no live VIA editing); everything is baked in.
-VIA_ENABLE = no
+# VIA 지원 (Keychron Launcher / VIA 앱에서 인식)
+VIA_ENABLE = yes

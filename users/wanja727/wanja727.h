@@ -2,14 +2,27 @@
  *
  * Shared user logic for all Keychron keyboards (K7 Max / K11 Max / K15 Max / V8 Max).
  *
- * Custom keycodes start at NEW_SAFE_RANGE (defined in keychron_common.h) because
- * Keychron already uses the QK_KB_0.. range for its own keycodes (BT_HST1, P2P4G, ...).
+ * Layer model (see each board's keymap + readme.md):
+ *   BASE  -> normal typing (number row: tap = number, hold = F1~F12)
+ *   FN2   -> the original Keychron media/RGB/BT layer (renamed from FN1)
+ *   NAV   -> CapsLock modifier: arrows / editing / browser / window / multi-monitor / 한영
+ *   MOUSE -> FN1 modifier: mouse move / buttons / wheel / browser / absolute cursor jump
+ *
+ * Custom keycodes start at NEW_SAFE_RANGE (defined in keychron_common.h) because Keychron
+ * already uses the QK_KB_0.. range for its own keycodes (BT_HST1, P2P4G, ...).
  */
 
 #pragma once
 
 #include QMK_KEYBOARD_H
 #include "keychron_common.h"
+
+// ---------------------------------------------------------------------------
+// 한/영 전환 키. 1순위는 KC_LNG1. Windows 환경에서 동작하지 않으면 아래를
+// KC_RALT 로 바꿔서 다시 빌드하면 된다. (자세한 내용은 readme.md 참고)
+// ---------------------------------------------------------------------------
+#define HANGEUL_KEYCODE KC_LNG1
+// #define HANGEUL_KEYCODE KC_RALT
 
 enum wanja_keycodes {
     // Number row: tap = number/symbol, hold(>HOLD_THRESHOLD) = F1~F12 (fires immediately)
@@ -25,11 +38,15 @@ enum wanja_keycodes {
     NUM_F10,
     NUM_F11,
     NUM_F12,
-    // NAV layer tab/q: tap = browser tab switch, hold = move window across monitors
-    WIN_TAB_PREV, // tap: Ctrl+Shift+Tab (prev tab)  | hold: Win+Shift+Left  (window to left monitor)
-    WIN_TAB_NEXT, // tap: Ctrl+Tab       (next tab)  | hold: Win+Shift+Right (window to right monitor)
     // CapsLock replacement: hold = NAV layer | (Win + this) = real Caps Lock
     MO_NAV,
+    // 한/영 전환 (HANGEUL_KEYCODE 를 tap)
+    HANGEUL,
+    // Alt+Tab task switcher with Alt held across repeated taps (Shift 동시押 = Alt+Shift+Tab)
+    ALT_TAB,
+    // Digitizer 절대좌표 커서 이동 (왼쪽/오른쪽 모니터 중앙)
+    CUR_LSCR,
+    CUR_RSCR,
 };
 
 // Shared hooks. Each board's keymap forwards process_record_user / matrix_scan_user here.

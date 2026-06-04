@@ -1,3 +1,3 @@
-# Pure compiled keymap (no live VIA editing); everything is baked in.
-VIA_ENABLE = no
+# VIA 지원
+VIA_ENABLE = yes
 ENCODER_MAP_ENABLE = yes

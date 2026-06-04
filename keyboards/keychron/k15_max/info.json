@@ -42,6 +42,9 @@
         "debounce_type": "custom"
     },
     "debounce": 50,
+    "dynamic_keymap": {
+        "layer_count": 6
+    },
     "eeprom": {
         "wear_leveling": {
             "driver": "embedded_flash",

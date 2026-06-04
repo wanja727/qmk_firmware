@@ -1,43 +1,38 @@
 /* Copyright 2025 @ wanja727
  *
- * Shared user logic for all Keychron keyboards.
- *  - Number row: tap = number, hold = F1~F12 (fires at threshold, no need to keep holding)
- *  - NAV tab/q: tap = browser tab switch, hold = move active window to other monitor
- *  - CapsLock: hold = NAV layer, Win+Caps = real Caps Lock
- *  - Mouse keys: Shift while moving = slow (MS_ACL0); constant speed set in config.h
+ * Shared user logic for all Keychron keyboards. See wanja727.h / readme.md.
  */
 
 #include "wanja727.h"
 
-#define HOLD_THRESHOLD 200 // ms; press longer than this -> hold action
+#ifdef DIGITIZER_ENABLE
+#    include "digitizer.h"
+#endif
 
-// Tap/hold table.  Index 0..11 = number row, 12 = WIN_TAB_PREV, 13 = WIN_TAB_NEXT.
-#define TH_COUNT 14
+#define HOLD_THRESHOLD 200  // ms; number row: press longer than this -> F1~F12
+#define ALT_TAB_TIMEOUT 600 // ms; release Alt this long after the last ALT_TAB tap
 
+// ---- Number row tap/hold table (index 0..11) ----
 // clang-format off
-static const uint16_t tap_kc[TH_COUNT] = {
-    KC_1, KC_2, KC_3, KC_4, KC_5, KC_6, KC_7, KC_8, KC_9, KC_0, KC_MINS, KC_EQL,
-    LCTL(LSFT(KC_TAB)), // WIN_TAB_PREV tap: previous browser tab
-    LCTL(KC_TAB),       // WIN_TAB_NEXT tap: next browser tab
-};
-static const uint16_t hold_kc[TH_COUNT] = {
-    KC_F1, KC_F2, KC_F3, KC_F4, KC_F5, KC_F6, KC_F7, KC_F8, KC_F9, KC_F10, KC_F11, KC_F12,
-    LGUI(LSFT(KC_LEFT)),  // WIN_TAB_PREV hold: move window to left monitor
-    LGUI(LSFT(KC_RIGHT)), // WIN_TAB_NEXT hold: move window to right monitor
-};
+static const uint16_t tap_kc[12]  = { KC_1, KC_2, KC_3, KC_4, KC_5, KC_6, KC_7, KC_8, KC_9, KC_0, KC_MINS, KC_EQL };
+static const uint16_t hold_kc[12] = { KC_F1, KC_F2, KC_F3, KC_F4, KC_F5, KC_F6, KC_F7, KC_F8, KC_F9, KC_F10, KC_F11, KC_F12 };
 // clang-format on
 
-static bool     th_held[TH_COUNT] = {false};
-static bool     th_sent[TH_COUNT] = {false};
-static uint16_t th_time[TH_COUNT] = {0};
+static bool     numf_held[12] = {false};
+static bool     numf_sent[12] = {false};
+static uint16_t numf_time[12] = {0};
 
-// NAV layer (CapsLock) state
+// ---- NAV (CapsLock) state ----
 static bool nav_active = false;
 
-// Mouse "slow on Shift" state
-static uint8_t mouse_count  = 0;     // number of mouse-move/wheel keys currently held
-static bool    shift_down   = false;
-static bool    acl_applied  = false; // is MS_ACL0 currently registered?
+// ---- Alt+Tab task switcher state ----
+static bool     alt_tab_active = false;
+static uint16_t alt_tab_timer  = 0;
+
+// ---- Mouse "slow on Shift" state ----
+static uint8_t mouse_count = 0;     // number of mouse move/wheel keys currently held
+static bool    shift_down  = false;
+static bool    acl_applied = false; // is MS_ACL0 currently registered?
 
 static void update_slow(void) {
     bool want = shift_down && (mouse_count > 0);
@@ -50,18 +45,28 @@ static void update_slow(void) {
     }
 }
 
+#ifdef DIGITIZER_ENABLE
+// 절대좌표로 커서를 옮긴다. Windows 는 digitizer 를 펜/터치처럼 다루므로
+// in_range 를 잠깐 켰다가 끄는 hover 동작으로 포인터를 이동시킨다.
+static void cursor_jump(float x, float y) {
+    digitizer_in_range_on();
+    digitizer_set_position(x, y);
+    digitizer_in_range_off();
+}
+#endif
+
 bool wanja_process_record(uint16_t keycode, keyrecord_t *record, uint8_t nav_layer) {
-    // --- Tap/hold keys (number row + NAV tab/q) ---
-    if ((keycode >= NUM_F1 && keycode <= NUM_F12) || keycode == WIN_TAB_PREV || keycode == WIN_TAB_NEXT) {
-        uint8_t idx = (keycode <= NUM_F12) ? (uint8_t)(keycode - NUM_F1) : (keycode == WIN_TAB_PREV ? 12 : 13);
+    // --- Number row: tap = number, hold = F1~F12 ---
+    if (keycode >= NUM_F1 && keycode <= NUM_F12) {
+        uint8_t idx = (uint8_t)(keycode - NUM_F1);
         if (record->event.pressed) {
-            th_held[idx] = true;
-            th_time[idx] = record->event.time;
-            th_sent[idx] = false;
+            numf_held[idx] = true;
+            numf_time[idx] = record->event.time;
+            numf_sent[idx] = false;
         } else {
-            th_held[idx] = false;
-            if (!th_sent[idx]) {
-                tap_code16(tap_kc[idx]); // short press -> tap action
+            numf_held[idx] = false;
+            if (!numf_sent[idx]) {
+                tap_code16(tap_kc[idx]);
             }
         }
         return false;
@@ -85,7 +90,45 @@ bool wanja_process_record(uint16_t keycode, keyrecord_t *record, uint8_t nav_lay
         return false;
     }
 
-    // --- Mouse: track movement keys, make Shift = slow ---
+    // --- 한/영 전환 ---
+    if (keycode == HANGEUL) {
+        if (record->event.pressed) {
+            tap_code16(HANGEUL_KEYCODE);
+        }
+        return false;
+    }
+
+    // --- Alt+Tab task switcher (Alt stays held across taps; Shift -> Alt+Shift+Tab) ---
+    if (keycode == ALT_TAB) {
+        if (record->event.pressed) {
+            if (!alt_tab_active) {
+                alt_tab_active = true;
+                register_code(KC_LALT);
+            }
+            alt_tab_timer = timer_read();
+            register_code(KC_TAB);
+        } else {
+            unregister_code(KC_TAB);
+            alt_tab_timer = timer_read();
+        }
+        return false;
+    }
+
+#ifdef DIGITIZER_ENABLE
+    // --- 절대좌표 커서 이동 (왼쪽/오른쪽 화면 중앙) ---
+    if (keycode == CUR_LSCR || keycode == CUR_RSCR) {
+        if (record->event.pressed) {
+            if (keycode == CUR_LSCR) {
+                cursor_jump(CURSOR_LEFT_X, CURSOR_LEFT_Y);
+            } else {
+                cursor_jump(CURSOR_RIGHT_X, CURSOR_RIGHT_Y);
+            }
+        }
+        return false;
+    }
+#endif
+
+    // --- Mouse: track movement/wheel keys, make Shift = slow ---
     switch (keycode) {
         case MS_UP:
         case MS_DOWN:
@@ -106,7 +149,7 @@ bool wanja_process_record(uint16_t keycode, keyrecord_t *record, uint8_t nav_lay
         case KC_RSFT:
             shift_down = record->event.pressed;
             update_slow();
-            // While mousing, consume Shift so it only slows the cursor (no Shift sent to OS).
+            // While mousing, consume Shift so it only slows the cursor.
             if (record->event.pressed && mouse_count > 0) {
                 return false;
             }
@@ -117,10 +160,16 @@ bool wanja_process_record(uint16_t keycode, keyrecord_t *record, uint8_t nav_lay
 }
 
 void wanja_matrix_scan(void) {
-    for (uint8_t i = 0; i < TH_COUNT; i++) {
-        if (th_held[i] && !th_sent[i] && timer_elapsed(th_time[i]) > HOLD_THRESHOLD) {
-            tap_code16(hold_kc[i]); // held past threshold -> hold action, fire once
-            th_sent[i] = true;
+    // Number row: fire F-key once the hold threshold passes.
+    for (uint8_t i = 0; i < 12; i++) {
+        if (numf_held[i] && !numf_sent[i] && timer_elapsed(numf_time[i]) > HOLD_THRESHOLD) {
+            tap_code16(hold_kc[i]);
+            numf_sent[i] = true;
         }
+    }
+    // Alt+Tab: release Alt after the timeout once no ALT_TAB key is held.
+    if (alt_tab_active && timer_elapsed(alt_tab_timer) > ALT_TAB_TIMEOUT) {
+        unregister_code(KC_LALT);
+        alt_tab_active = false;
     }
 }

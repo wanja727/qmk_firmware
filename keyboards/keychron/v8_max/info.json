@@ -64,7 +64,7 @@
         }
     },
     "dynamic_keymap": {
-        "layer_count": 5
+        "layer_count": 6
     },
     "eeprom": {
         "wear_leveling": {
