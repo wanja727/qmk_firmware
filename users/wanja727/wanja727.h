@@ -38,9 +38,12 @@ enum wanja_keycodes {
     NUM_F10,
     NUM_F11,
     NUM_F12,
-    // CapsLock replacement: hold = NAV layer | (Win + this) = real Caps Lock
+    // CapsLock replacement (tap-hold):
+    //   tap        = 한/영 전환 (HANGEUL_KEYCODE)
+    //   hold/조합  = NAV layer
+    //   Win + this = 기존 Caps Lock
     MO_NAV,
-    // 한/영 전환 (HANGEUL_KEYCODE 를 tap)
+    // (사용 안 함) 예전 Caps+Space 한/영 키코드. VIA 키코드 값 유지를 위해 슬롯만 남겨둠.
     HANGEUL,
     // Alt+Tab task switcher. Alt 는 진입한 레이어(NAV/MOUSE)를 누르고 있는 동안 유지되고,
     // 해당 modifier(Caps 또는 FN1)를 떼면 Alt 가 풀려 선택이 확정된다.

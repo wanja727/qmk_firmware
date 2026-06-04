@@ -17,8 +17,12 @@ static bool     numf_held[12] = {false};
 static bool     numf_sent[12] = {false};
 static uint16_t numf_time[12] = {0};
 
-// ---- NAV (CapsLock) state ----
-static bool nav_active = false;
+// ---- NAV (CapsLock tap-hold) state ----
+//   tap   = 한/영,  hold/조합 = NAV layer,  Win+Caps = Caps Lock
+static bool     caps_held        = false; // tap-hold 세션 진행 중
+static bool     caps_nav_on      = false; // Caps 로 인해 NAV 가 켜져 있음
+static bool     caps_interrupted = false; // 누른 동안 다른 키가 눌림 -> hold(NAV) 확정
+static uint16_t caps_time        = 0;
 
 // ---- Alt+Tab task switcher state ----
 // Alt 는 ALT_TAB 을 처음 누른 시점의 레이어(NAV/MOUSE)가 활성인 동안 유지된다.
@@ -42,6 +46,11 @@ static void update_slow(uint8_t mouse_layer) {
 }
 
 bool wanja_process_record(uint16_t keycode, keyrecord_t *record, uint8_t nav_layer, uint8_t mouse_layer) {
+    // Caps tap-hold: 누르고 있는 동안 다른 키가 눌리면 hold(NAV)로 확정 (tap=한/영 취소)
+    if (caps_held && record->event.pressed && keycode != MO_NAV) {
+        caps_interrupted = true;
+    }
+
     // --- Number row: tap = number, hold = F1~F12 ---
     if (keycode >= NUM_F1 && keycode <= NUM_F12) {
         uint8_t idx = (uint8_t)(keycode - NUM_F1);
@@ -58,19 +67,29 @@ bool wanja_process_record(uint16_t keycode, keyrecord_t *record, uint8_t nav_lay
         return false;
     }
 
-    // --- CapsLock: hold = NAV layer, Win+Caps = real Caps Lock ---
+    // --- CapsLock tap-hold: tap = 한/영, hold/조합 = NAV, Win+Caps = Caps Lock ---
     if (keycode == MO_NAV) {
         if (record->event.pressed) {
             if (get_mods() & MOD_MASK_GUI) {
-                tap_code(KC_CAPS); // Win held -> behave as the original Caps Lock
+                tap_code(KC_CAPS); // Win held -> 기존 Caps Lock
             } else {
+                caps_held        = true;
+                caps_interrupted = false;
+                caps_time        = record->event.time;
                 layer_on(nav_layer);
-                nav_active = true;
+                caps_nav_on = true;
             }
         } else {
-            if (nav_active) {
+            if (caps_nav_on) {
                 layer_off(nav_layer);
-                nav_active = false;
+                caps_nav_on = false;
+            }
+            if (caps_held) {
+                caps_held = false;
+                // 짧게 눌렀고(다른 키 조합 없음) -> tap = 한/영
+                if (!caps_interrupted && timer_elapsed(caps_time) < TAPPING_TERM) {
+                    tap_code16(HANGEUL_KEYCODE);
+                }
             }
         }
         return false;

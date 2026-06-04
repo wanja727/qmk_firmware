@@ -12,8 +12,8 @@
 |--------|-----------|------|
 | **BASE** (MAC/WIN) | 기본 | 기존 타이핑 레이어 그대로 유지. 숫자열은 tap=숫자 / hold=F1~F12. |
 | **FN2** (MAC/WIN) | FN2 키 hold | **기존 Keychron FN1(미디어/RGB/BT) 레이어를 이름만 FN2로 바꾼 것.** 밝기/볼륨/미디어/블루투스(BT_HST)/RGB/NKRO 등 원래 기능을 그대로 보존. |
-| **NAV** | CapsLock hold | 방향/편집/브라우저/창/멀티모니터/한영 전환. |
-| **MOUSE** | FN1 키 hold **또는 오른쪽 Space hold** | 마우스 이동/버튼/휠/브라우저/작업 전환. |
+| **NAV** | CapsLock hold (tap = 한/영) | 방향/편집/브라우저/창/멀티모니터. |
+| **MOUSE** | FN1 키 hold **또는 Space hold** | 마우스 이동/버튼/휠/브라우저/작업 전환. |
 
 > **중요(FN1/FN2 재배치):** 기존 FN1(미디어) 레이어는 **FN2로 이름이 바뀌었고**, 그 레이어로
 > 들어가는 키를 "FN2 키"라고 부릅니다. 새로 생긴 "FN1 키"는 **MOUSE 레이어 진입 전용**입니다.
@@ -28,13 +28,18 @@ MAC/WIN BASE는 물리 OS 스위치로 전환되며 기존과 동일하게 동�
 
 ## 2. CapsLock / NAV 레이어
 
-CapsLock을 **누르고 있는 동안** NAV 레이어가 활성화됩니다.
-기존 CapsLock(대문자 고정) 기능은 **Win + CapsLock** 으로 사용합니다. (custom 처리)
+CapsLock은 **tap-hold** 로 동작합니다 (custom 처리):
+- **Caps 탭 = 한/영 전환** (단일키, 사용 빈도 높은 한영을 조합 없이)
+- **Caps 홀드(또는 다른 키와 조합) = NAV 레이어**
+- **Win + Caps = 기존 CapsLock(대문자 고정)**
+
+> 다른 키와 함께 눌리면 즉시 NAV(홀드)로 확정되고, 아무 키 없이 짧게 떼면 한/영이 입력됩니다.
+> 홀드 판정 시간은 `TAPPING_TERM`(기본 200ms)을 따릅니다.
 
 | 키 (Caps + …) | 동작 | 키 (Caps + …) | 동작 |
 |---|---|---|---|
 | `I` / `J` / `K` / `L` | ↑ / ← / ↓ / → | `U` / `O` | Home / End |
-| `N` / `M` | Backspace / Delete | `Space` | **한/영 전환** |
+| `N` / `M` | Backspace / Delete | (Caps 탭) | **한/영 전환** |
 | `Q` | 브라우저 이전 탭 (Ctrl+Shift+Tab) | `W` | 브라우저 다음 탭 (Ctrl+Tab) |
 | `E` | 탭 닫기 (Ctrl+W) | `R` | 창 닫기 (Alt+F4) |
 | `Tab` | **작업 전환 (Alt+Tab)** | `Shift`+`Tab` | 역방향 작업 전환 (Alt+Shift+Tab) |
@@ -46,13 +51,13 @@ CapsLock을 **누르고 있는 동안** NAV 레이어가 활성화됩니다.
 
 FN1 키를 **누르고 있는 동안** MOUSE 레이어가 활성화됩니다.
 
-**진입키 (실험 중):** 기존 FN1 hold 에 더해, **오른쪽 Space 를 hold** 하면 MOUSE 레이어로 들어갑니다
-(`오른쪽 Space tap = Space`, `hold = MOUSE`, 즉 `LT(MOUSE, KC_SPC)`). FN1을 계속 누른 채
-조작하기 불편할 때 오른손 엄지로 쉽게 진입하기 위한 용도입니다.
-- 적용 보드: **K11 / K15 / V8** (스페이스가 2개). **K7 은 스페이스가 1개**라 기존 FN1 방식만 사용합니다.
-- 왼쪽 Space 는 항상 일반 Space 이며, `Caps + (왼쪽)Space = 한/영` 은 그대로입니다.
+**진입키 (실험 중):** 기존 FN1 hold 에 더해, **Space 를 hold** 하면 MOUSE 레이어로 들어갑니다
+(`Space tap = Space`, `hold = MOUSE`, 즉 `LT(MOUSE, KC_SPC)`). FN1을 계속 누른 채 조작하기
+불편할 때 엄지로 쉽게 진입하기 위한 용도입니다.
+- **K11 / K15 / V8** : 오른쪽 Space 에 적용 (왼쪽 Space 는 일반 Space 유지).
+- **K7** : 스페이스가 1개라 그 **단일 Space** 에 적용 (tap=Space / hold=MOUSE).
 - 타이핑 중 Space 지연/오진입이 생기면 `users/wanja727/wanja727.c` 의 `RSPACE_TAPPING_TERM`
-  값을 조절하세요. 그래도 불편하면 각 보드 keymap 의 오른쪽 Space 를 `LT(MOUSE, KC_SPC)` 에서
+  값을 조절하세요. 그래도 불편하면 각 보드 keymap 의 해당 Space 를 `LT(MOUSE, KC_SPC)` 에서
   다시 `KC_SPC` 로 되돌리면 기존(FN1 전용) 방식으로 복귀합니다.
 
 | 키 (FN1 + …) | 동작 | 키 (FN1 + …) | 동작 |
@@ -74,7 +79,8 @@ RGB 제어, NKRO 토글, 배터리 표시 등을 사용할 수 있습니다. (�
 
 ## 5. 한/영 전환 (KC_LNG1 / KC_RALT)
 
-`Caps + Space` = 한/영 전환. 1순위로 **`KC_LNG1`** 을 사용합니다.
+**Caps 키를 짧게 탭** 하면 한/영 전환입니다. (조합키가 아니라 단일키 — 사용 빈도 높은 한영에 적합)
+1순위로 **`KC_LNG1`** 을 사용합니다.
 
 Windows 한글 입력 환경에 따라 `KC_LNG1`이 동작하지 않을 수 있습니다. 그럴 때는
 `users/wanja727/wanja727.h`의 아래 한 줄만 바꾸고 다시 빌드하면 됩니다.
@@ -181,7 +187,8 @@ GitHub Actions(`.github/workflows/build-wanja727.yml`)에 push하면 4개 보드
 - [ ] BASE 기존 키맵 유지 (타이핑 정상)
 - [ ] FN2 키로 기존 미디어/RGB/BT 기능 동작
 - [ ] Caps + I/J/K/L 방향키
-- [ ] Caps + Space 한/영 전환
+- [ ] Caps 탭 = 한/영 전환 / Caps 홀드 = NAV / Win+Caps = CapsLock
+- [ ] Space 홀드 = MOUSE (K7 단일 Space 포함), Space 탭 = Space
 - [ ] Caps + Q/W/E/R 브라우저 제어
 - [ ] Caps + Tab 작업 전환 / Caps + Shift + Tab 역방향
 - [ ] Caps + A/S 모니터 간 활성 창 이동
