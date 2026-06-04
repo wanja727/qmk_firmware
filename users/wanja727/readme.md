@@ -94,13 +94,13 @@ NAV(Caps) 와 MOUSE(Space) 모두 동일하게:
 
 ## 8. 정밀(느린) 커서 이동 + 마우스 가속 제거
 
-- 기본 마우스 이동은 **가속 모드(QMK 기본)** 입니다. 짧게 누르면 한 스텝만(정밀), 계속 누르면
-  점점 빨라져 넓은 화면을 빠르게 이동합니다. (`users/wanja727/config.h` 의 `MOUSEKEY_*` 값으로
-  최고 속도/가속률 튜닝, 더 부드러운 곡선은 `MK_KINETIC_SPEED` 대안)
-- **MOUSE 레이어(Space hold) 에서 CapsLock 을 홀드** 하면 `MS_ACL0`(느린 고정 속도)로 전환되어
-  코드 라인/글자 사이를 정밀하게 오갈 수 있습니다. (예전엔 Shift → Caps 로 변경, 가속 모드에서도
-  ACL0 은 느린 정밀 이동으로 동작)
-- **OS 가속과의 구분:** Windows 의 **"포인터 정밀도 향상"** 은 OS 레벨이라 펌웨어가 못 끕니다.
+- 기본 마우스 이동은 **Kinetic(부드러운 가속) 모드** 입니다. 천천히 시작(`MOUSEKEY_INITIAL_SPEED`)
+  해서 부드럽게 최고 속도(`MOUSEKEY_BASE_SPEED`)까지 가속합니다.
+- **MOUSE 레이어(Space hold) 에서 CapsLock 을 홀드** 하면 `MS_ACL0` = `MOUSEKEY_DECELERATED_SPEED`
+  (느린 정밀 속도)로 전환됩니다. 정밀 이동이 빠르게 느껴지면 `config.h` 에서 이 값을 더 낮추세요.
+- **OS 가속과의 구분:** QMK 출력에 Windows 의 포인터 속도/"포인터 정밀도 향상"이 곱해집니다.
+  여전히 빠르거나 들쭉날쭉하면 *Windows 설정 > 마우스 > 포인터 옵션* 에서 "포인터 정밀도 향상"을
+  끄고 포인터 속도를 중간으로 두면 더 일정/정밀해집니다.
 
 ---
 
