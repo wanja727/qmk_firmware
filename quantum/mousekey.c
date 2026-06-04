@@ -386,7 +386,13 @@ void mousekey_task(void) {
 
 void mousekey_on(uint8_t code) {
 #    ifdef MK_KINETIC_SPEED
-    if (mouse_timer == 0) {
+    // wanja727 fix: kinetic 타이머는 '이동/휠' 키에서만 시작한다. 버튼(또는 ACL) 키가 타이머를
+    // 시작시키면, 버튼을 오래 누른 뒤 이동할 때 경과시간이 커져 커서가 최고 속도로 튀는 버그가 생긴다.
+    if (mouse_timer == 0 &&
+        (code == QK_MOUSE_CURSOR_UP || code == QK_MOUSE_CURSOR_DOWN ||
+         code == QK_MOUSE_CURSOR_LEFT || code == QK_MOUSE_CURSOR_RIGHT ||
+         code == QK_MOUSE_WHEEL_UP || code == QK_MOUSE_WHEEL_DOWN ||
+         code == QK_MOUSE_WHEEL_LEFT || code == QK_MOUSE_WHEEL_RIGHT)) {
         mouse_timer = timer_read();
     }
 #    endif

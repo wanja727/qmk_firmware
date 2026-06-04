@@ -131,6 +131,16 @@ Launcher 가 내장 정의를 쓰면 NAV/MOUSE 레이어가 UI 에 안 보일 �
 
 ---
 
+## 참고: 코어 패치 (quantum/mousekey.c)
+
+kinetic 모드 버그 하나를 코어에서 고쳤습니다: 마우스 **버튼을 오래 누른 뒤 IJKL 로 이동하면
+커서가 최고 속도로 튀는** 문제. 원인은 `mousekey_on()` 이 버튼/ACL 키에서도 kinetic 타이머
+(`mouse_timer`)를 시작시켜, 버튼을 쥔 시간이 가속 경과시간으로 잡히던 것. 타이머를 **이동/휠
+키에서만 시작**하도록 수정했습니다.
+
+> 이 변경은 `users/`/`keymaps/` 밖의 파일이라, `git merge upstream/2025q3` 시 충돌이 날 수
+> 있습니다. 충돌 나면 `mousekey_on()` 의 해당 블록만 다시 적용하세요.
+
 ## 빌드
 
 ```bash
