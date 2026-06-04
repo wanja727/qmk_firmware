@@ -112,6 +112,20 @@ bool wanja_process_record(uint16_t keycode, keyrecord_t *record, uint8_t nav_lay
     return true;
 }
 
+// 오른쪽 Space = LT(MOUSE, KC_SPC) 의 tap/hold 판정 시간.
+// 타이핑 중 Space 입력이 늦거나 MOUSE 로 오진입하면 이 값을 조절한다.
+//  - 값을 키우면: hold 판정이 늦어져 tap(Space) 이 잘 나옴 (오진입 ↓, 의도한 hold 는 더 길게 눌러야 함)
+//  - 값을 줄이면: MOUSE 진입이 빨라짐 (반응 ↑, 타이핑 중 오진입 ↑)
+#define RSPACE_TAPPING_TERM 200
+
+uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
+    // 보드별 MOUSE 레이어 인덱스와 무관하게, KC_SPC 를 tap 으로 갖는 모든 LT 에 적용.
+    if (IS_QK_LAYER_TAP(keycode) && QK_LAYER_TAP_GET_TAP_KEYCODE(keycode) == KC_SPC) {
+        return RSPACE_TAPPING_TERM;
+    }
+    return TAPPING_TERM;
+}
+
 void wanja_matrix_scan(void) {
     // Number row: fire F-key once the hold threshold passes.
     for (uint8_t i = 0; i < 12; i++) {
