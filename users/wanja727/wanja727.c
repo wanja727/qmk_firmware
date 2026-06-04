@@ -31,11 +31,13 @@ static bool    shift_down  = false;
 static bool    acl_applied = false; // is MS_ACL0 currently registered?
 
 static void update_slow(void) {
-    bool want = shift_down && (mouse_count > 0);
-    if (want && !acl_applied) {
+    // ACL0(느린 속도)는 "Shift + 마우스 이동 중"에 켜되, 끄는 것은 Shift 를 뗄 때만 한다.
+    // 방향키를 뗄 때(mouse_count 가 0이 되는 순간) ACL0 를 끄면, 그 방향키가 아직 살아있는
+    // 동안 속도가 기본값으로 복귀해 한 틱 더 튀어나가는 문제가 생기므로 그 시점엔 끄지 않는다.
+    if (shift_down && mouse_count > 0 && !acl_applied) {
         register_code(MS_ACL0);
         acl_applied = true;
-    } else if (!want && acl_applied) {
+    } else if (!shift_down && acl_applied) {
         unregister_code(MS_ACL0);
         acl_applied = false;
     }
