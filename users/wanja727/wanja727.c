@@ -5,12 +5,7 @@
 
 #include "wanja727.h"
 
-#ifdef DIGITIZER_ENABLE
-#    include "digitizer.h"
-#endif
-
 #define HOLD_THRESHOLD 200  // ms; number row: press longer than this -> F1~F12
-#define ALT_TAB_TIMEOUT 600 // ms; release Alt this long after the last ALT_TAB tap
 
 // ---- Number row tap/hold table (index 0..11) ----
 // clang-format off
@@ -26,8 +21,9 @@ static uint16_t numf_time[12] = {0};
 static bool nav_active = false;
 
 // ---- Alt+Tab task switcher state ----
-static bool     alt_tab_active = false;
-static uint16_t alt_tab_timer  = 0;
+// Alt 는 ALT_TAB 을 처음 누른 시점의 레이어(NAV/MOUSE)가 활성인 동안 유지된다.
+static bool    alt_tab_active = false;
+static uint8_t alt_tab_layer  = 0;
 
 // ---- Mouse "slow on Shift" state ----
 static uint8_t mouse_count = 0;     // number of mouse move/wheel keys currently held
@@ -44,16 +40,6 @@ static void update_slow(void) {
         acl_applied = false;
     }
 }
-
-#ifdef DIGITIZER_ENABLE
-// 절대좌표로 커서를 옮긴다. Windows 는 digitizer 를 펜/터치처럼 다루므로
-// in_range 를 잠깐 켰다가 끄는 hover 동작으로 포인터를 이동시킨다.
-static void cursor_jump(float x, float y) {
-    digitizer_in_range_on();
-    digitizer_set_position(x, y);
-    digitizer_in_range_off();
-}
-#endif
 
 bool wanja_process_record(uint16_t keycode, keyrecord_t *record, uint8_t nav_layer) {
     // --- Number row: tap = number, hold = F1~F12 ---
@@ -98,35 +84,20 @@ bool wanja_process_record(uint16_t keycode, keyrecord_t *record, uint8_t nav_lay
         return false;
     }
 
-    // --- Alt+Tab task switcher (Alt stays held across taps; Shift -> Alt+Shift+Tab) ---
+    // --- Alt+Tab task switcher (Alt stays held while the trigger layer is active) ---
     if (keycode == ALT_TAB) {
         if (record->event.pressed) {
             if (!alt_tab_active) {
                 alt_tab_active = true;
+                alt_tab_layer  = get_highest_layer(layer_state); // NAV or MOUSE
                 register_code(KC_LALT);
             }
-            alt_tab_timer = timer_read();
-            register_code(KC_TAB);
+            register_code(KC_TAB); // 누르고 있으면 반복, 탭하면 한 칸씩 전환 (Shift 동시押 = 역방향)
         } else {
             unregister_code(KC_TAB);
-            alt_tab_timer = timer_read();
         }
         return false;
     }
-
-#ifdef DIGITIZER_ENABLE
-    // --- 절대좌표 커서 이동 (왼쪽/오른쪽 화면 중앙) ---
-    if (keycode == CUR_LSCR || keycode == CUR_RSCR) {
-        if (record->event.pressed) {
-            if (keycode == CUR_LSCR) {
-                cursor_jump(CURSOR_LEFT_X, CURSOR_LEFT_Y);
-            } else {
-                cursor_jump(CURSOR_RIGHT_X, CURSOR_RIGHT_Y);
-            }
-        }
-        return false;
-    }
-#endif
 
     // --- Mouse: track movement/wheel keys, make Shift = slow ---
     switch (keycode) {
@@ -167,8 +138,8 @@ void wanja_matrix_scan(void) {
             numf_sent[i] = true;
         }
     }
-    // Alt+Tab: release Alt after the timeout once no ALT_TAB key is held.
-    if (alt_tab_active && timer_elapsed(alt_tab_timer) > ALT_TAB_TIMEOUT) {
+    // Alt+Tab: 진입했던 레이어(Caps/FN1)를 떼면 Alt 를 풀어 선택을 확정한다.
+    if (alt_tab_active && !layer_state_is(alt_tab_layer)) {
         unregister_code(KC_LALT);
         alt_tab_active = false;
     }

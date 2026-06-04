@@ -6,7 +6,7 @@
  *   BASE  -> normal typing (number row: tap = number, hold = F1~F12)
  *   FN2   -> the original Keychron media/RGB/BT layer (renamed from FN1)
  *   NAV   -> CapsLock modifier: arrows / editing / browser / window / multi-monitor / 한영
- *   MOUSE -> FN1 modifier: mouse move / buttons / wheel / browser / absolute cursor jump
+ *   MOUSE -> FN1 modifier: mouse move / buttons / wheel / browser / task switch
  *
  * Custom keycodes start at NEW_SAFE_RANGE (defined in keychron_common.h) because Keychron
  * already uses the QK_KB_0.. range for its own keycodes (BT_HST1, P2P4G, ...).
@@ -42,11 +42,10 @@ enum wanja_keycodes {
     MO_NAV,
     // 한/영 전환 (HANGEUL_KEYCODE 를 tap)
     HANGEUL,
-    // Alt+Tab task switcher with Alt held across repeated taps (Shift 동시押 = Alt+Shift+Tab)
+    // Alt+Tab task switcher. Alt 는 진입한 레이어(NAV/MOUSE)를 누르고 있는 동안 유지되고,
+    // 해당 modifier(Caps 또는 FN1)를 떼면 Alt 가 풀려 선택이 확정된다.
+    // Shift 동시押 = Alt+Shift+Tab (역방향).
     ALT_TAB,
-    // Digitizer 절대좌표 커서 이동 (왼쪽/오른쪽 모니터 중앙)
-    CUR_LSCR,
-    CUR_RSCR,
 };
 
 // Shared hooks. Each board's keymap forwards process_record_user / matrix_scan_user here.
