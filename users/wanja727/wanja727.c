@@ -29,21 +29,9 @@ static uint16_t caps_time        = 0;
 static bool    alt_tab_active = false;
 static uint8_t alt_tab_layer  = 0;
 
-// ---- Mouse "slow on Shift" state ----
-// FN1(MOUSE) 레이어를 누르고 있는 동안 Shift 는 기존 동작 대신 "느린 속도 전용" 키로만 쓴다.
-static bool shift_down  = false;
-static bool acl_applied = false; // is MS_ACL0 currently registered?
-
-static void update_slow(uint8_t mouse_layer) {
-    bool want = shift_down && layer_state_is(mouse_layer);
-    if (want && !acl_applied) {
-        register_code(MS_ACL0);
-        acl_applied = true;
-    } else if (!want && acl_applied) {
-        unregister_code(MS_ACL0);
-        acl_applied = false;
-    }
-}
+// ---- 정밀(느린) 커서 상태 ----
+// MOUSE 레이어를 누르고 있는 동안 CapsLock 을 홀드하면 느린 커서 이동(MS_ACL0).
+static bool caps_slow = false;
 
 bool wanja_process_record(uint16_t keycode, keyrecord_t *record, uint8_t nav_layer, uint8_t mouse_layer) {
     // Caps tap-hold: 누르고 있는 동안 다른 키가 눌리면 hold(NAV)로 확정 (tap=한/영 취소)
@@ -67,10 +55,13 @@ bool wanja_process_record(uint16_t keycode, keyrecord_t *record, uint8_t nav_lay
         return false;
     }
 
-    // --- CapsLock tap-hold: tap = 한/영, hold/조합 = NAV, Win+Caps = Caps Lock ---
+    // --- CapsLock: MOUSE 중엔 느린 커서, 그 외엔 tap=한/영 / hold=NAV / Win+Caps=Caps Lock ---
     if (keycode == MO_NAV) {
         if (record->event.pressed) {
-            if (get_mods() & MOD_MASK_GUI) {
+            if (layer_state_is(mouse_layer)) {
+                register_code(MS_ACL0); // MOUSE 레이어 중 Caps 홀드 = 정밀(느린) 커서
+                caps_slow = true;
+            } else if (get_mods() & MOD_MASK_GUI) {
                 tap_code(KC_CAPS); // Win held -> 기존 Caps Lock
             } else {
                 caps_held        = true;
@@ -80,6 +71,10 @@ bool wanja_process_record(uint16_t keycode, keyrecord_t *record, uint8_t nav_lay
                 caps_nav_on = true;
             }
         } else {
+            if (caps_slow) {
+                unregister_code(MS_ACL0);
+                caps_slow = false;
+            }
             if (caps_nav_on) {
                 layer_off(nav_layer);
                 caps_nav_on = false;
@@ -116,16 +111,6 @@ bool wanja_process_record(uint16_t keycode, keyrecord_t *record, uint8_t nav_lay
             unregister_code(KC_TAB);
         }
         return false;
-    }
-
-    // --- FN1(MOUSE) 홀드 중 Shift = 느린 속도 전용 ---
-    if (keycode == KC_LSFT || keycode == KC_RSFT) {
-        shift_down = record->event.pressed;
-        update_slow(mouse_layer);
-        if (layer_state_is(mouse_layer)) {
-            return false; // MOUSE 레이어에서는 Shift 를 OS 로 보내지 않고 속도 조절로만 사용
-        }
-        return true;
     }
 
     return true;
