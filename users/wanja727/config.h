@@ -27,14 +27,14 @@
 // ---------------------------------------------------------------------------
 #define MK_KINETIC_SPEED
 
-#define MOUSEKEY_DELAY 5               // QMK 기본 5
+#define MOUSEKEY_DELAY 0               // 0 = 누른 즉시 반응 (QMK 기본 5)
 #define MOUSEKEY_INTERVAL 10           // QMK 기본 10 (≈100 reports/s)
 #define MOUSEKEY_MOVE_DELTA 16         // QMK 기본 16
 
 #define MOUSEKEY_INITIAL_SPEED 100     // QMK 기본 100
 #define MOUSEKEY_BASE_SPEED 5000       // QMK 기본 5000 (최고 속도)
-#define MOUSEKEY_DECELERATED_SPEED 400 // QMK 기본 400 (Caps 정밀 이동)
-#define MOUSEKEY_ACCELERATED_SPEED 3000// QMK 기본 3000
+#define MOUSEKEY_DECELERATED_SPEED 400 // QMK 기본 400 (ACL0, 현재 미사용)
+#define MOUSEKEY_ACCELERATED_SPEED 8000// Caps 홀드 = 빠른 이동(ACL2). 기본 3000보다 높임
 
 // 휠 (kinetic) — 모두 QMK 기본값
 #define MOUSEKEY_WHEEL_INITIAL_MOVEMENTS 16

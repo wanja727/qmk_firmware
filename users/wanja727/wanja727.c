@@ -29,9 +29,9 @@ static uint16_t caps_time        = 0;
 static bool    alt_tab_active = false;
 static uint8_t alt_tab_layer  = 0;
 
-// ---- 정밀(느린) 커서 상태 ----
-// MOUSE 레이어를 누르고 있는 동안 CapsLock 을 홀드하면 느린 커서 이동(MS_ACL0).
-static bool caps_slow = false;
+// ---- 빠른 커서 상태 ----
+// MOUSE 레이어에서 CapsLock 을 홀드하면 빠른 커서 이동(MS_ACL2 = MOUSEKEY_ACCELERATED_SPEED).
+static bool caps_accel = false;
 
 bool wanja_process_record(uint16_t keycode, keyrecord_t *record, uint8_t nav_layer, uint8_t mouse_layer) {
     // Caps tap-hold: 누르고 있는 동안 다른 키가 눌리면 hold(NAV)로 확정 (tap=한/영 취소)
@@ -55,12 +55,12 @@ bool wanja_process_record(uint16_t keycode, keyrecord_t *record, uint8_t nav_lay
         return false;
     }
 
-    // --- CapsLock: MOUSE 중엔 느린 커서, 그 외엔 tap=한/영 / hold=NAV / Win+Caps=Caps Lock ---
+    // --- CapsLock: MOUSE 중엔 빠른 커서, 그 외엔 tap=한/영 / hold=NAV / Win+Caps=Caps Lock ---
     if (keycode == MO_NAV) {
         if (record->event.pressed) {
             if (layer_state_is(mouse_layer)) {
-                register_code(MS_ACL0); // MOUSE 레이어 중 Caps 홀드 = 정밀(느린) 커서
-                caps_slow = true;
+                register_code(MS_ACL2); // MOUSE 레이어 중 Caps 홀드 = 빠른 커서
+                caps_accel = true;
             } else if (get_mods() & MOD_MASK_GUI) {
                 tap_code(KC_CAPS); // Win held -> 기존 Caps Lock
             } else {
@@ -71,9 +71,9 @@ bool wanja_process_record(uint16_t keycode, keyrecord_t *record, uint8_t nav_lay
                 caps_nav_on = true;
             }
         } else {
-            if (caps_slow) {
-                unregister_code(MS_ACL0);
-                caps_slow = false;
+            if (caps_accel) {
+                unregister_code(MS_ACL2);
+                caps_accel = false;
             }
             if (caps_nav_on) {
                 layer_off(nav_layer);
