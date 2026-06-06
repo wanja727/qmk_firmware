@@ -13,11 +13,12 @@
 | **BASE** (MAC/WIN) | 기본 | 일반 타이핑. 숫자열은 tap=숫자 / hold=F1~F12. |
 | **FN1** (media) | **Fn 키 hold** | 기존 Keychron 미디어/RGB/BT/밝기/볼륨/BT_HST/NKRO 레이어 (원본 유지). |
 | **NAV** | **CapsLock hold** (tap=한/영) | 방향/편집/브라우저/창/멀티모니터. |
-| **MOUSE** | **Caps + A 토글** (해제 = Esc) | 마우스 이동/버튼/휠/브라우저 (Caps hold=빠른 이동). |
+| **MOUSE** | **Caps + A 토글** (on/off) | 마우스 이동/버튼/휠/브라우저. |
 
 - **Fn 키 = 미디어(FN1)** 입니다. (K7/K11/V8 은 오른쪽 두 Fn 키 모두 미디어, K15 는 Fn = 미디어)
-- **MOUSE 는 토글** 입니다: `Caps + A` 로 켜고, `Esc` 로 끕니다. (홀드가 아니라 토글이라
-  손을 떼도 유지됨. Space 는 일반 Space 로 되돌렸습니다.)
+- **MOUSE 는 토글** 입니다: `Caps + A` 로 **켜고 끕니다**(같은 키 토글). 추가로 `Esc` 로도 끌 수
+  있습니다(까먹고 타이핑하려 할 때 습관적으로 빠져나오기 용). 손을 떼도 유지됩니다.
+  Space 는 일반 Space 입니다.
 - K15 의 **오른쪽 Ctrl 은 원래대로 Right Ctrl** 입니다.
 
 MAC/WIN BASE 는 물리 OS 스위치로 전환되며 기존과 동일합니다.
@@ -30,7 +31,6 @@ CapsLock 은 **tap-hold** 입니다:
 - **Caps 탭 = 한/영 전환** (단일키)
 - **Caps 홀드(또는 다른 키와 조합) = NAV 레이어**
 - **Win + Caps = 기존 CapsLock**
-- **MOUSE 레이어 중 Caps 홀드 = 빠른 커서 이동** (아래 8번 참고)
 
 > 다른 키와 함께 눌리면 즉시 NAV(홀드)로 확정, 아무 키 없이 짧게 떼면 한/영. 판정은 `TAPPING_TERM`(200ms).
 
@@ -41,23 +41,21 @@ CapsLock 은 **tap-hold** 입니다:
 | `Tab` | 브라우저 이전 탭 (Ctrl+Shift+Tab) | `Q` | 브라우저 다음 탭 (Ctrl+Tab) |
 | `W` | 탭 닫기 (Ctrl+W) | `E` | 창 닫기 (Alt+F4) |
 | `I` / `J` / `K` / `L` | ↑ / ← / ↓ / → | `U` / `O` | Home / End |
-| `N` / `M` | Backspace / Delete | `A` | **MOUSE 레이어 토글** |
-| `,` / `.` | 활성 창 **왼쪽/오른쪽 모니터** 이동 (Win+Shift+←/→) | | |
+| `N` / `M` | Backspace / Delete | `A` | **MOUSE 레이어 토글 (on/off)** |
+| `S` / `D` | 활성 창 **왼쪽/오른쪽 모니터** 이동 (Win+Shift+←/→) | | |
 
 ---
 
 ## 3. MOUSE 레이어 (Caps+A 토글 / Esc 해제)
 
-`Caps + A` 로 MOUSE 레이어를 켜고(토글), `Esc` 로 끕니다. 홀드가 아니라 토글이라 손을 떼도
-유지됩니다. (MOUSE 가 켜지면 Caps 는 NAV 가 아니라 "빠른 이동" 모디파이어가 되므로, 해제는
-Caps+A 가 아니라 **Esc** 입니다.)
+`Caps + A` 로 **켜고 끕니다**(같은 키 토글). `Esc` 로도 끌 수 있습니다. 토글이라 손을 떼도 유지.
 
 | 키 | 동작 | 키 | 동작 |
 |---|---|---|---|
 | `I` / `J` / `K` / `L` | 마우스 ↑ / ← / ↓ / → | `S` / `D` | 왼쪽 / 오른쪽 클릭 (BTN1 / BTN2) |
 | `A` / `F` | 뒤로 / 앞으로 (BTN4 / BTN5) | `;` / `H` | 휠 위 / 휠 아래 |
 | `U` / `O` | 휠 왼쪽 / 휠 오른쪽 | `Tab`/`Q`/`W`/`E` | 이전탭/다음탭/탭닫기/창닫기 |
-| **`Caps` (hold)** | **빠른 커서 이동** | `Esc` | MOUSE 레이어 해제 |
+| `Caps + A` | MOUSE 레이어 끄기 (토글) | `Esc` | MOUSE 레이어 끄기 (보조) |
 
 ---
 
@@ -91,18 +89,17 @@ NAV(Caps) 와 MOUSE(Space) 모두 동일하게:
 
 ## 7. 멀티 모니터 활성 창 이동 (NAV)
 
-- `Caps + ,` = `Win + Shift + ←` (왼쪽 모니터로), `Caps + .` = `Win + Shift + →` (오른쪽 모니터로)
-  (`,` `.` 가 `<` `>` 모양이라 좌/우 mnemonic. 예전 Caps+A/S 자리는 A 가 MOUSE 토글로 바뀌어 이동)
+- `Caps + S` = `Win + Shift + ←` (왼쪽 모니터로), `Caps + D` = `Win + Shift + →` (오른쪽 모니터로)
 
 ---
 
-## 8. 마우스 속도 (Kinetic 가속) + Caps 빠른 이동
+## 8. 마우스 속도 (Kinetic 가속)
 
 - 기본 마우스 이동은 **Kinetic(부드러운 가속) 모드** 입니다. 천천히 시작(`MOUSEKEY_INITIAL_SPEED`)
   해서 부드럽게 최고 속도(`MOUSEKEY_BASE_SPEED`)까지 가속합니다. 살짝 누르면 한 스텝만 가서 정밀
-  이동이 되고, 계속 누르면 빨라집니다.
-- **MOUSE 레이어에서 CapsLock 을 홀드** 하면 `MS_ACL2` = `MOUSEKEY_ACCELERATED_SPEED`(빠른 속도)로
-  전환됩니다. 넓은 화면을 한 번에 건너뛸 때 사용. 더 빠르게/느리게는 `config.h` 에서 조절.
+  이동이 되고, 계속 누르면 빨라집니다. 속도는 `users/wanja727/config.h` 에서 조절.
+- `MS_ACL0`(느림)/`MS_ACL2`(빠름) 고정 속도는 현재 어떤 키에도 바인딩하지 않았습니다(가속만으로 충분).
+  필요하면 MOUSE 레이어의 빈 키에 `MS_ACL0`/`MS_ACL2` 를 넣어 정밀/빠른 모드를 추가할 수 있습니다.
 - **OS 가속과의 구분:** QMK 출력에 Windows 의 포인터 속도/"포인터 정밀도 향상"이 곱해집니다.
   일정/정밀하게 쓰려면 *Windows 설정 > 마우스 > 포인터 옵션* 에서 "포인터 정밀도 향상"을 끄는 것을 권장.
 
@@ -116,7 +113,7 @@ NAV(Caps) 와 MOUSE(Space) 모두 동일하게:
 
 ## 10. MOUSE 레이어 진입/해제 (토글)
 
-- 진입: **`Caps + A`** (`TG(MOUSE)`), 해제: **`Esc`**.
+- **`Caps + A`** = `TG(MOUSE)` — 같은 키로 켜고 끕니다. 보조 해제키로 **`Esc`** 도 있습니다.
 - 토글이라 손을 떼도 유지됩니다. Space 는 일반 Space 입니다(예전 Space-hold 진입은 폐지).
 - 다시 hold 방식이 좋으면 각 보드 keymap 의 Space 를 `LT(MOUSE, KC_SPC)` 로 바꾸면 됩니다.
 
@@ -163,7 +160,6 @@ GitHub Actions(`.github/workflows/build-wanja727.yml`)에 push 하면 4개 보�
 - [ ] Fn 키 = 기존 미디어/RGB/BT 동작
 - [ ] Caps 탭 = 한/영, Caps 홀드 = NAV, Win+Caps = CapsLock
 - [ ] Caps + I/J/K/L 방향, U/O Home·End, N/M Bksp·Del
-- [ ] Caps + Tab/Q/W/E 브라우저, Caps + ,/. 모니터 간 창 이동
-- [ ] Caps + A = MOUSE 토글 ON, Esc = MOUSE 토글 OFF
+- [ ] Caps + Tab/Q/W/E 브라우저, Caps + S/D 모니터 간 창 이동
+- [ ] Caps + A = MOUSE 토글 ON/OFF, Esc = MOUSE OFF(보조)
 - [ ] MOUSE: I/J/K/L 이동, S/D 클릭, A/F 뒤로·앞으로, ;/H/U/O 휠, Tab/Q/W/E 브라우저
-- [ ] MOUSE + Caps 홀드 = 빠른 이동
