@@ -39,16 +39,16 @@ enum wanja_keycodes {
     NUM_F11,
     NUM_F12,
     // CapsLock replacement (tap-hold):
-    //   tap        = 한/영 전환 (HANGEUL_KEYCODE)
+    //   tap        = MOUSE 레이어 ON (layer_on, 토글 아님)
     //   hold/조합  = NAV layer
     //   Win + this = 기존 Caps Lock
     MO_NAV,
-    // (사용 안 함) 예전 Caps+Space 한/영 키코드. VIA 키코드 값 유지를 위해 슬롯만 남겨둠.
+    // (사용 안 함) 한/영 키코드 슬롯. 한/영은 이제 좌Shift = LSFT_T(HANGEUL_KEYCODE) 로 처리.
     HANGEUL,
-    // Alt+Tab task switcher. Alt 는 진입한 레이어(NAV/MOUSE)를 누르고 있는 동안 유지되고,
-    // 해당 modifier(Caps 또는 FN1)를 떼면 Alt 가 풀려 선택이 확정된다.
-    // Shift 동시押 = Alt+Shift+Tab (역방향).
+    // (사용 안 함) 슬롯 유지. (VIA 키코드 값 안정성)
     ALT_TAB,
+    // MOUSE 레이어 OFF (layer_off). MOUSE 의 Space / Esc 에 매핑.
+    MS_OFF,
 };
 
 // Shared hooks. Each board's keymap forwards process_record_user / matrix_scan_user here.

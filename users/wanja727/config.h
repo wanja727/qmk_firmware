@@ -5,6 +5,9 @@
 
 #pragma once
 
+// 좌 Shift = LSFT_T(HANGEUL_KEYCODE) tap-hold 안정화: Shift+다른키는 즉시 Shift(hold)로 확정.
+#define HOLD_ON_OTHER_KEY_PRESS_PER_KEY
+
 // ---------------------------------------------------------------------------
 // Mouse keys: Kinetic(부드러운 가속) 모드.
 //   - 천천히 시작(INITIAL_SPEED)해서 부드럽게 가속(BASE_SPEED 까지)

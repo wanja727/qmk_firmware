@@ -30,8 +30,7 @@ static bool    alt_tab_active = false;
 static uint8_t alt_tab_layer  = 0;
 
 bool wanja_process_record(uint16_t keycode, keyrecord_t *record, uint8_t nav_layer, uint8_t mouse_layer) {
-    (void)mouse_layer; // 현재 미사용 (Caps 는 항상 NAV 로 동작 -> Caps+A 토글 해제 가능)
-    // Caps tap-hold: 누르고 있는 동안 다른 키가 눌리면 hold(NAV)로 확정 (tap=한/영 취소)
+    // Caps tap-hold: 누르고 있는 동안 다른 키가 눌리면 hold(NAV)로 확정 (tap=MOUSE ON 취소)
     if (caps_held && record->event.pressed && keycode != MO_NAV) {
         caps_interrupted = true;
     }
@@ -52,8 +51,7 @@ bool wanja_process_record(uint16_t keycode, keyrecord_t *record, uint8_t nav_lay
         return false;
     }
 
-    // --- CapsLock: tap=한/영 / hold(또는 조합)=NAV / Win+Caps=Caps Lock ---
-    //  (MOUSE 가 켜져 있어도 Caps 는 NAV 로 동작 -> NAV 의 A 키로 MOUSE 토글 해제 가능)
+    // --- CapsLock: tap = MOUSE ON / hold(또는 조합) = NAV / Win+Caps = Caps Lock ---
     if (keycode == MO_NAV) {
         if (record->event.pressed) {
             if (get_mods() & MOD_MASK_GUI) {
@@ -72,16 +70,24 @@ bool wanja_process_record(uint16_t keycode, keyrecord_t *record, uint8_t nav_lay
             }
             if (caps_held) {
                 caps_held = false;
-                // 짧게 눌렀고(다른 키 조합 없음) -> tap = 한/영
+                // 짧게 눌렀고(다른 키 조합 없음) -> tap = MOUSE 레이어 ON (토글 아님)
                 if (!caps_interrupted && timer_elapsed(caps_time) < TAPPING_TERM) {
-                    tap_code16(HANGEUL_KEYCODE);
+                    layer_on(mouse_layer);
                 }
             }
         }
         return false;
     }
 
-    // --- 한/영 전환 ---
+    // --- MOUSE 레이어 OFF (MOUSE 의 Space / Esc) ---
+    if (keycode == MS_OFF) {
+        if (record->event.pressed) {
+            layer_off(mouse_layer);
+        }
+        return false;
+    }
+
+    // --- (미사용) 한/영 키코드 ---
     if (keycode == HANGEUL) {
         if (record->event.pressed) {
             tap_code16(HANGEUL_KEYCODE);
@@ -107,18 +113,13 @@ bool wanja_process_record(uint16_t keycode, keyrecord_t *record, uint8_t nav_lay
     return true;
 }
 
-// 오른쪽 Space = LT(MOUSE, KC_SPC) 의 tap/hold 판정 시간.
-// 타이핑 중 Space 입력이 늦거나 MOUSE 로 오진입하면 이 값을 조절한다.
-//  - 값을 키우면: hold 판정이 늦어져 tap(Space) 이 잘 나옴 (오진입 ↓, 의도한 hold 는 더 길게 눌러야 함)
-//  - 값을 줄이면: MOUSE 진입이 빨라짐 (반응 ↑, 타이핑 중 오진입 ↑)
-#define RSPACE_TAPPING_TERM 200
-
-uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
-    // 보드별 MOUSE 레이어 인덱스와 무관하게, KC_SPC 를 tap 으로 갖는 모든 LT 에 적용.
-    if (IS_QK_LAYER_TAP(keycode) && QK_LAYER_TAP_GET_TAP_KEYCODE(keycode) == KC_SPC) {
-        return RSPACE_TAPPING_TERM;
+// 좌 Shift = LSFT_T(HANGEUL_KEYCODE): tap = 한/영, hold = Shift.
+// 다른 키가 같이 눌리면 즉시 hold(Shift)로 확정 -> Shift+키 입력이 한/영으로 오판되지 않음.
+bool get_hold_on_other_key_press(uint16_t keycode, keyrecord_t *record) {
+    if (keycode == LSFT_T(HANGEUL_KEYCODE)) {
+        return true;
     }
-    return TAPPING_TERM;
+    return false;
 }
 
 void wanja_matrix_scan(void) {
