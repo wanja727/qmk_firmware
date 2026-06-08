@@ -12,8 +12,8 @@ enum layers {
     MAC_FN,
     WIN_BASE,
     WIN_FN,
-    NAV,
     MOUSE,
+    NAV,
 };
 
 // clang-format off

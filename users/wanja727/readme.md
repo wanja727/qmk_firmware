@@ -56,9 +56,10 @@
 | `Space` / `Esc` | MOUSE OFF | **`Caps` + …** | NAV 사용 (뒤로/앞으로·브라우저·모니터) |
 
 > - MOUSE 에서 Shift 는 일반 Shift 가 아니라 **고정 속도(MS_ACL0)** 전용입니다(Shift 입력 안 나감).
-> - 뒤로/앞으로(S/G), 브라우저(W/E/R/T), 모니터(D/F) 는 MOUSE 에서 **제거**했고, MOUSE 중
->   **Caps 를 누르면 NAV 로 폴스루**되어 그대로 쓸 수 있습니다 (예: `Caps+W`=이전 탭).
->   (MOUSE 의 빈 키는 투명 → 하위 활성 레이어 NAV 로 떨어지는 원리. 레이어 재정렬 불필요.)
+> - **MOUSE 사용 중 Caps 를 누르고 있으면 NAV 전체가 덮어쓴다.** 즉 `Caps+ijkl`=방향키,
+>   `Caps+D/F`=모니터 이동, `Caps+W/E/R/T`=브라우저, `Caps+S/G`=뒤로/앞으로 등 NAV 기능을
+>   그대로 사용. Caps 를 떼면 다시 MOUSE. (이를 위해 **레이어 순서를 NAV > MOUSE** 로 둠 — ijkl·d/f
+>   처럼 MOUSE 에도 매핑된 키까지 NAV 가 덮어쓰려면 NAV 가 위에 있어야 함.)
 
 ---
 
