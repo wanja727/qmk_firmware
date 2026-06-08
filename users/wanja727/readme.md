@@ -35,28 +35,30 @@
 
 | 키 | 동작 | 키 | 동작 |
 |---|---|---|---|
-| `Tab` | 이전 탭 (Ctrl+Shift+Tab) | `Q` | 다음 탭 (Ctrl+Tab) |
-| `W` | 탭 닫기 (Ctrl+W) | `E` | 창 닫기 (Alt+F4) |
+| `W` | 이전 탭 (Ctrl+Shift+Tab) | `E` | 다음 탭 (Ctrl+Tab) |
+| `R` | 탭 닫기 (Ctrl+W) | `T` | 창 닫기 (Alt+F4) |
+| `S` / `G` | 마우스 뒤로 / 앞으로 (BTN4 / BTN5) | `D` / `F` | 활성 창 왼쪽/오른쪽 모니터 이동 (Win+Shift+←/→) |
 | `I`/`J`/`K`/`L` | ↑ / ← / ↓ / → | `U` / `O` | Home / End |
-| `N` / `M` | Backspace / Delete | `S` / `D` | 활성 창 왼쪽/오른쪽 모니터 이동 (Win+Shift+←/→) |
-| `H` / `;` | 휠 업 / 휠 다운 | `Y` / `P` | 휠 왼쪽 / 휠 오른쪽 |
+| `N` / `M` | Backspace / Delete | `H` / `;` / `Y` / `P` | 휠 업/다운/좌/우 |
 
 ---
 
 ## 3. MOUSE 레이어 (Caps tap = ON / Space·Esc = OFF)
 
 - 진입: **Caps 탭** (항상 ON)
-- 해제: MOUSE 안에서 **Space** 또는 **Esc** (항상 OFF). 여기서 Space 는 실제 Space 입력이 아니라
-  MOUSE OFF 동작. (MOUSE 가 꺼진 일반 상태에서는 Space = 정상 Space)
+- 해제: MOUSE 안에서 **Space** 또는 **Esc** (항상 OFF). Space 는 실제 입력이 아니라 MOUSE OFF 동작.
+  (MOUSE 꺼진 일반 상태에서는 Space = 정상 Space)
 
 | 키 | 동작 | 키 | 동작 |
 |---|---|---|---|
-| `I`/`J`/`K`/`L` | 마우스 ↑ / ← / ↓ / → | `S` / `D` | 왼쪽 / 오른쪽 클릭 (BTN1 / BTN2) |
-| `A` / `F` | 뒤로 / 앞으로 (BTN4 / BTN5) | `H` / `;` | 휠 업 / 휠 다운 |
-| `Y` / `P` | 휠 왼쪽 / 휠 오른쪽 | `Tab`/`Q`/`W`/`E` | 이전탭/다음탭/탭닫기/창닫기 |
-| **`Shift` (hold)** | **빠른 마우스 이동 (MS_ACL2)** | `Space` / `Esc` | MOUSE OFF |
+| `I`/`J`/`K`/`L` | 마우스 ↑ / ← / ↓ / → | `D` / `F` | 왼쪽 / 오른쪽 클릭 (BTN1 / BTN2) |
+| `H` / `;` / `Y` / `P` | 휠 업/다운/좌/우 | **`Shift` (hold)** | **고정 속도 이동 (MS_ACL0)** |
+| `Space` / `Esc` | MOUSE OFF | **`Caps` + …** | NAV 사용 (뒤로/앞으로·브라우저·모니터) |
 
-> MOUSE 레이어에서 Shift 는 일반 Shift 가 아니라 빠른 이동 전용입니다(Shift 입력은 안 나감).
+> - MOUSE 에서 Shift 는 일반 Shift 가 아니라 **고정 속도(MS_ACL0)** 전용입니다(Shift 입력 안 나감).
+> - 뒤로/앞으로(S/G), 브라우저(W/E/R/T), 모니터(D/F) 는 MOUSE 에서 **제거**했고, MOUSE 중
+>   **Caps 를 누르면 NAV 로 폴스루**되어 그대로 쓸 수 있습니다 (예: `Caps+W`=이전 탭).
+>   (MOUSE 의 빈 키는 투명 → 하위 활성 레이어 NAV 로 떨어지는 원리. 레이어 재정렬 불필요.)
 
 ---
 
@@ -81,23 +83,26 @@ Fn 키를 누르면 기존과 똑같이 밝기/볼륨/미디어/블루투스(BT_
 
 ---
 
-## 6. 브라우저 / 모니터 / 휠 (NAV·MOUSE 공통 위치)
+## 6. 브라우저 / 뒤로앞으로 / 모니터 / 휠 (NAV 기준)
 
-- 브라우저: `Tab`=이전탭, `Q`=다음탭, `W`=탭닫기, `E`=창닫기 (NAV·MOUSE 동일)
-- 휠: `H`=업, `;`=다운, `Y`=왼쪽, `P`=오른쪽 (NAV·MOUSE 동일)
-- 모니터 창 이동(NAV): `Caps + S` = 왼쪽, `Caps + D` = 오른쪽
+- 브라우저: `Caps + W/E/R/T` = 이전탭/다음탭/탭닫기/창닫기
+- 마우스 뒤로/앞으로: `Caps + S` / `Caps + G` (BTN4 / BTN5)
+- 모니터 창 이동: `Caps + D` = 왼쪽, `Caps + F` = 오른쪽
+- 휠: `H`=업, `;`=다운, `Y`=왼쪽, `P`=오른쪽 (NAV·MOUSE 동일 위치)
 
-> 이전 버전의 Alt+Tab custom 전환 / Caps+A 토글은 제거했습니다.
+> MOUSE 레이어에서도 **Caps 를 누르면** 위 NAV 기능을 그대로 쓸 수 있습니다(폴스루). 그래서
+> 알파벳/홈로우 위치를 유지한 채 작업할 수 있습니다.
 
 ---
 
 ## 7. 마우스 속도 (Kinetic 가속)
 
-- **Kinetic(부드러운 가속) 모드.** 살짝 누르면 한 스텝(정밀), 계속 누르면 가속. MOUSE 에서
-  **Shift 홀드 = MS_ACL2(빠른 이동)**.
-- 속도는 `users/wanja727/config.h` 의 `MOUSEKEY_*` 로 조절 (INITIAL/BASE/ACCELERATED 등).
-- **OS 가속 구분:** Windows 의 포인터 속도/"포인터 정밀도 향상"이 곱해집니다. 일정/정밀하게
-  쓰려면 *Windows 설정 > 마우스 > 포인터 옵션* 에서 "포인터 정밀도 향상"을 끄는 것을 권장.
+- **Kinetic(부드러운 가속) 모드.** 살짝 누르면 한 스텝(정밀), 계속 누르면 가속(최고 `BASE_SPEED`).
+- MOUSE 에서 **Shift 홀드 = `MS_ACL0` 고정 속도**(`DECELERATED_SPEED`). base 보다 느린 일정 속도라
+  정밀/안정 이동에 사용. (base 보다 낮은 값이므로 가속이 아니라 감속 의미 → ACL0 사용)
+- `users/wanja727/config.h` 현재값: `BASE_SPEED 2000`, `DECELERATED_SPEED 800`(Shift 고정속도).
+- **OS 가속 구분:** Windows 포인터 속도/"포인터 정밀도 향상"이 곱해집니다. 일정/정밀하게 쓰려면
+  *Windows 설정 > 마우스 > 포인터 옵션* 에서 "포인터 정밀도 향상"을 끄는 것을 권장.
 
 ---
 
@@ -142,8 +147,9 @@ push 하면 GitHub Actions 가 4개 보드를 빌드해 `.bin`/`.hex` artifact �
 - [ ] 좌Shift 탭 = 한/영, 좌Shift+키 = 일반 Shift
 - [ ] Caps 탭 = MOUSE ON (이미 켜져 있어도 유지), Caps 홀드 = NAV, Win+Caps = CapsLock
 - [ ] MOUSE 에서 Space / Esc = MOUSE OFF, 일반 상태 Space = 정상 Space
-- [ ] Caps + I/J/K/L 방향, U/O Home·End, N/M Bksp·Del, S/D 모니터 이동
+- [ ] Caps + I/J/K/L 방향, U/O Home·End, N/M Bksp·Del
+- [ ] Caps + W/E/R/T 브라우저, S/G 뒤로·앞으로, D/F 모니터 이동
 - [ ] NAV·MOUSE 휠 H/;/Y/P (업/다운/좌/우)
-- [ ] MOUSE I/J/K/L 이동, S/D 클릭, A/F 뒤로·앞으로, Tab/Q/W/E 브라우저
-- [ ] MOUSE 에서 Shift 홀드 = 빠른 이동
+- [ ] MOUSE I/J/K/L 이동, D/F 클릭, Shift 홀드 = 고정 속도(800)
+- [ ] MOUSE 중 Alt+Tab 정상 동작 (Tab 제거 후), MOUSE 중 Caps+W 등 NAV 폴스루
 - [ ] Fn 키 = 기존 미디어/RGB/BT

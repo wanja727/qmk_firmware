@@ -1,11 +1,5 @@
 /* Copyright 2024 ~ 2026 @ Keychron (https://www.keychron.com)
  * Customized by wanja727 -- unified across K7/K11/K15/V8 Max. See users/wanja727/readme.md.
- *
- * 레이어:
- *   BASE        타이핑 (숫자열 tap=숫자/hold=F1~F12, 좌Shift tap=한영/hold=Shift)
- *   FN1(media)  기존 Keychron 미디어/RGB/BT 레이어 (Fn 키로 진입)
- *   NAV         CapsLock hold (방향/편집/브라우저/창/모니터/휠). Caps tap = MOUSE ON.
- *   MOUSE       Caps tap 으로 ON, Space/Esc 로 OFF. 마우스 이동/버튼/휠/브라우저, Shift=빠른이동.
  */
 
 #include QMK_KEYBOARD_H
@@ -52,20 +46,23 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      _______,  UG_PREV,  UG_VALD,  UG_HUED,  UG_SATD,  UG_SPDD,  NK_TOGG,  _______,  _______,  _______,  _______,                      _______,  _______,  _______,
      _______,  _______,  _______,                                _______,                                _______,  _______,  _______,  _______,  _______,  _______),
 
-// NAV = CapsLock hold (Caps tap = MOUSE ON). 휠: H=업 ;=다운 Y=좌 P=우
+// NAV = CapsLock hold (Caps tap = MOUSE ON).
+//  W/E/R/T = 이전탭/다음탭/탭닫기/창닫기, S/G = 마우스 뒤로/앞으로, D/F = 창 좌/우 모니터 이동
+//  휠: H=업 ;=다운 Y=좌 P=우
 [NAV] = LAYOUT_ansi_68(
      _______,  _______,           _______,            _______,            _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
-     LCTL(LSFT(KC_TAB)),LCTL(KC_TAB),LCTL(KC_W),LALT(KC_F4),_______,        _______,  MS_WHLL,  KC_HOME,  KC_UP,    KC_END,   MS_WHLR,  _______,  _______,  _______,            _______,
-     _______,  _______,           LGUI(LSFT(KC_LEFT)),LGUI(LSFT(KC_RGHT)),_______,   _______,  MS_WHLU,  KC_LEFT,  KC_DOWN,  KC_RGHT,  MS_WHLD,  _______,            _______,            _______,
+     _______,  _______,           LCTL(LSFT(KC_TAB)),LCTL(KC_TAB),LCTL(KC_W),LALT(KC_F4),MS_WHLL, KC_HOME,  KC_UP,    KC_END,   MS_WHLR,  _______,  _______,  _______,            _______,
+     _______,  _______,           MS_BTN4,            LGUI(LSFT(KC_LEFT)),LGUI(LSFT(KC_RGHT)),MS_BTN5,MS_WHLU,KC_LEFT,KC_DOWN,KC_RGHT,  MS_WHLD,  _______,            _______,            _______,
      _______,  _______,           _______,            _______,            _______,  _______,  KC_BSPC,  KC_DEL,   _______,  _______,  _______,                      _______,  _______,  _______,
      _______,  _______,           _______,                                 _______,                               _______,  _______,  _______,  _______,  _______,  _______),
 
-// MOUSE = Caps tap 으로 ON / Space·Esc 로 OFF. Shift=MS_ACL2(빠른 이동). 휠: H=업 ;=다운 Y=좌 P=우
+// MOUSE = Caps tap 으로 ON / Space·Esc 로 OFF. Shift=MS_ACL0(고정 속도). 휠: H=업 ;=다운 Y=좌 P=우
+//  나머지 기능(뒤로/앞으로/브라우저/모니터)은 Caps 조합으로 NAV 에서 사용.
 [MOUSE] = LAYOUT_ansi_68(
      MS_OFF,   _______,           _______,            _______,            _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
-     LCTL(LSFT(KC_TAB)),LCTL(KC_TAB),LCTL(KC_W),LALT(KC_F4),_______,        _______,  MS_WHLL,  _______,  MS_UP,    _______,  MS_WHLR,  _______,  _______,  _______,            _______,
-     _______,  MS_BTN4,           MS_BTN1,            MS_BTN2,            MS_BTN5,    _______,  MS_WHLU,  MS_LEFT,  MS_DOWN,  MS_RGHT,  MS_WHLD,  _______,            _______,            _______,
-     MS_ACL2,  _______,           _______,            _______,            _______,  _______,  _______,  _______,  _______,  _______,  _______,                      _______,  _______,  _______,
+     _______,  _______,           _______,            _______,            _______,  _______,  MS_WHLL,  _______,  MS_UP,    _______,  MS_WHLR,  _______,  _______,  _______,            _______,
+     _______,  _______,           _______,            MS_BTN1,            MS_BTN2,  _______,  MS_WHLU,  MS_LEFT,  MS_DOWN,  MS_RGHT,  MS_WHLD,  _______,            _______,            _______,
+     MS_ACL0,  _______,           _______,            _______,            _______,  _______,  _______,  _______,  _______,  _______,  _______,                      _______,  _______,  _______,
      _______,  _______,           _______,                                 MS_OFF,                                _______,  _______,  _______,  _______,  _______,  _______),
 };
 // clang-format on
