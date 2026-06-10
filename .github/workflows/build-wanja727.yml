@@ -12,6 +12,12 @@ on:
     paths:
       - 'users/wanja727/**'
       - 'keyboards/keychron/**/keymaps/wanja727/**'
+      # board-level changes that affect our builds (e.g. v8_max RGB pin fix)
+      - 'keyboards/keychron/k7_max/**'
+      - 'keyboards/keychron/k11_max/**'
+      - 'keyboards/keychron/k15_max/**'
+      - 'keyboards/keychron/v8_max/**'
+      - 'quantum/mousekey.c'
       - '.github/workflows/build-wanja727.yml'
   workflow_dispatch:
 
