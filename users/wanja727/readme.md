@@ -14,46 +14,48 @@
 |--------|------|------|
 | **BASE** | 기본 | 타이핑. 숫자열 tap=숫자/hold=F1~F12. 좌Shift tap=한/영. Caps tap=MOUSE ON. |
 | **FN1** (media) | Fn 키 hold | 기존 Keychron 미디어/RGB/BT/밝기/볼륨/BT_HST/NKRO (원본 유지). |
-| **NAV** | **CapsLock hold** | 방향/편집/브라우저/창/모니터/휠. |
-| **MOUSE** | **Caps tap = ON** / **Space·Esc = OFF** | 마우스 이동/버튼/휠/브라우저. Shift=빠른 이동. |
+| **NAV** | **CapsLock hold** 또는 **Space hold** | 방향/편집/브라우저/창/모니터/휠. |
+| **MOUSE** | **Caps tap = ON** / **Space = OFF** | 마우스 이동/버튼/휠. Shift=고정속도. |
 
-- **MOUSE 는 toggle 이 아님.** Caps 를 **탭**하면 항상 ON(`layer_on`), 이미 켜져 있어도 꺼지지 않음.
-  끄는 건 MOUSE 안의 **Space** 또는 **Esc**(항상 OFF, `layer_off`).
+- **NAV 진입은 Caps 홀드 또는 Space 홀드** 둘 다 가능. (Space = `LT(NAV, KC_SPC)`: 탭=Space,
+  홀드=NAV. Caps 가 한 칸 왼쪽이라 손이 치우치는 걸 보완하려고 엄지 Space 도 NAV mod 로 추가.)
+- **MOUSE 는 toggle 이 아님.** Caps 를 **탭**하면 항상 ON(`layer_on`). 끄는 건 MOUSE 안의 **Space**(OFF).
 - Fn 키 = 미디어. (K7/K11/V8 오른쪽 두 Fn 모두 미디어, K15 는 Fn = 미디어 / 오른쪽 Ctrl 은 Right Ctrl)
 
 ---
 
-## 2. CapsLock (tap = MOUSE ON, hold = NAV)
+## 2. NAV 레이어 (Caps hold 또는 Space hold)
 
-- **Caps 탭 = MOUSE 레이어 ON**
-- **Caps 홀드(또는 다른 키와 조합) = NAV 레이어**
-- **Win + Caps = 기존 CapsLock**
+진입: **CapsLock 홀드** 또는 **Space 홀드**.
+- **CapsLock**: 홀드/조합 = NAV, **탭 = MOUSE ON**, **Win+Caps = 기존 CapsLock**.
+- **Space**: 홀드 = NAV, 탭 = 일반 Space (`LT(NAV, KC_SPC)`).
 
-> 다른 키와 함께 눌리면 즉시 NAV(홀드)로 확정, 아무 키 없이 짧게 떼면 MOUSE ON. (`TAPPING_TERM` 200ms)
+> Caps/Space 모두 다른 키와 함께 눌리면 NAV(홀드)로 동작, 짧게 떼면 각각 MOUSE ON / Space.
 
-### NAV 매핑 (Caps + …)
+### NAV 매핑 (Caps 또는 Space + …)
 
 | 키 | 동작 | 키 | 동작 |
 |---|---|---|---|
-| `W` | 이전 탭 (Ctrl+Shift+Tab) | `E` | 다음 탭 (Ctrl+Tab) |
-| `R` | 탭 닫기 (Ctrl+W) | `T` | 창 닫기 (Alt+F4) |
-| `S` / `G` | 마우스 뒤로 / 앞으로 (BTN4 / BTN5) | `D` / `F` | 활성 창 왼쪽/오른쪽 모니터 이동 (Win+Shift+←/→) |
-| `I`/`J`/`K`/`L` | ↑ / ← / ↓ / → | `U` / `O` | Home / End |
-| `N` / `M` | Backspace / Delete | `H` / `;` / `Y` / `P` | 휠 업/다운/좌/우 |
+| `Q` | 이전 탭 (Ctrl+Shift+Tab) | `W` | 다음 탭 (Ctrl+Tab) |
+| `E` | 탭 닫기 (Ctrl+W) | `R` | 창 닫기 (Alt+F4) |
+| `T` | 새 탭 (Ctrl+T) | `A` / `S` | 마우스 뒤로 / 앞으로 (BTN4 / BTN5) |
+| `D` / `F` | 활성 창 왼쪽/오른쪽 모니터 이동 (Win+Shift+←/→) | `U` / `O` | Home / End |
+| `I`/`J`/`K`/`L` | ↑ / ← / ↓ / → | `N` / `M` | Backspace / Delete |
+| `H` / `;` / `Y` / `P` | 휠 업/다운/좌/우 | | |
 
 ---
 
-## 3. MOUSE 레이어 (Caps tap = ON / Space·Esc = OFF)
+## 3. MOUSE 레이어 (Caps tap = ON / Space = OFF)
 
 - 진입: **Caps 탭** (항상 ON)
-- 해제: MOUSE 안에서 **Space** 또는 **Esc** (항상 OFF). Space 는 실제 입력이 아니라 MOUSE OFF 동작.
-  (MOUSE 꺼진 일반 상태에서는 Space = 정상 Space)
+- 해제: MOUSE 안에서 **Space** (항상 OFF). Space 는 실제 입력이 아니라 MOUSE OFF 동작.
+  (MOUSE 꺼진 일반 상태에서는 Space = 정상 Space / 홀드 = NAV)
 
 | 키 | 동작 | 키 | 동작 |
 |---|---|---|---|
 | `I`/`J`/`K`/`L` | 마우스 ↑ / ← / ↓ / → | `D` / `F` | 왼쪽 / 오른쪽 클릭 (BTN1 / BTN2) |
 | `H` / `;` / `Y` / `P` | 휠 업/다운/좌/우 | **`Shift` (hold)** | **고정 속도 이동 (MS_ACL0)** |
-| `Space` / `Esc` | MOUSE OFF | **`Caps` + …** | NAV 사용 (뒤로/앞으로·브라우저·모니터) |
+| `Space` | MOUSE OFF | **`Caps` + …** | NAV 사용 (뒤로/앞으로·브라우저·모니터) |
 
 > - MOUSE 에서 Shift 는 일반 Shift 가 아니라 **고정 속도(MS_ACL0)** 전용입니다(Shift 입력 안 나감).
 > - **MOUSE 사용 중 Caps 를 누르고 있으면 NAV 전체가 덮어쓴다.** 즉 `Caps+ijkl`=방향키,
@@ -75,6 +77,8 @@ Fn 키를 누르면 기존과 똑같이 밝기/볼륨/미디어/블루투스(BT_
 - **왼쪽 Shift 탭 = 한/영 전환**, **왼쪽 Shift 홀드 = 일반 Shift** (`LSFT_T(HANGEUL_KEYCODE)`).
 - Shift 를 누른 채 다른 키를 누르면 즉시 Shift(hold)로 확정되어, Shift+키 입력이 한/영으로
   오판되지 않습니다 (`get_hold_on_other_key_press`).
+- **한→영 직후 바로 대문자(Shift 홀드+A)** 입력 시 한/영이 두 번 바뀌던 문제는 `QUICK_TAP_TERM 0`
+  으로 수정했습니다(탭 직후 홀드를 "탭 반복"이 아니라 정상 Shift 홀드로 처리).
 - 한/영 keycode 는 1순위 `KC_LNG1`. 안 되면 `users/wanja727/wanja727.h` 에서 변경:
 
 ```c
@@ -86,10 +90,11 @@ Fn 키를 누르면 기존과 똑같이 밝기/볼륨/미디어/블루투스(BT_
 
 ## 6. 브라우저 / 뒤로앞으로 / 모니터 / 휠 (NAV 기준)
 
-- 브라우저: `Caps + W/E/R/T` = 이전탭/다음탭/탭닫기/창닫기
-- 마우스 뒤로/앞으로: `Caps + S` / `Caps + G` (BTN4 / BTN5)
-- 모니터 창 이동: `Caps + D` = 왼쪽, `Caps + F` = 오른쪽
+- 브라우저: `Q`=이전탭, `W`=다음탭, `E`=탭닫기, `R`=창닫기, `T`=새 탭(Ctrl+T)
+- 마우스 뒤로/앞으로: `A` / `S` (BTN4 / BTN5)
+- 모니터 창 이동: `D` = 왼쪽, `F` = 오른쪽
 - 휠: `H`=업, `;`=다운, `Y`=왼쪽, `P`=오른쪽 (NAV·MOUSE 동일 위치)
+  (위는 모두 Caps 또는 Space 홀드 상태에서 사용)
 
 > MOUSE 레이어에서도 **Caps 를 누르면** 위 NAV 기능을 그대로 쓸 수 있습니다(폴스루). 그래서
 > 알파벳/홈로우 위치를 유지한 채 작업할 수 있습니다.
@@ -146,11 +151,12 @@ push 하면 GitHub Actions 가 4개 보드를 빌드해 `.bin`/`.hex` artifact �
 
 - [ ] 4개 보드 컴파일 / VIA 인식 / BASE 타이핑 정상
 - [ ] 좌Shift 탭 = 한/영, 좌Shift+키 = 일반 Shift
-- [ ] Caps 탭 = MOUSE ON (이미 켜져 있어도 유지), Caps 홀드 = NAV, Win+Caps = CapsLock
-- [ ] MOUSE 에서 Space / Esc = MOUSE OFF, 일반 상태 Space = 정상 Space
-- [ ] Caps + I/J/K/L 방향, U/O Home·End, N/M Bksp·Del
-- [ ] Caps + W/E/R/T 브라우저, S/G 뒤로·앞으로, D/F 모니터 이동
-- [ ] NAV·MOUSE 휠 H/;/Y/P (업/다운/좌/우)
-- [ ] MOUSE I/J/K/L 이동, D/F 클릭, Shift 홀드 = 고정 속도(800)
-- [ ] MOUSE 중 Alt+Tab 정상 동작 (Tab 제거 후), MOUSE 중 Caps+W 등 NAV 폴스루
+- [ ] **한→영 직후 Shift 홀드+A = 대문자 A** (한영 2번 안 됨 / QUICK_TAP_TERM 0)
+- [ ] Caps 탭 = MOUSE ON, Caps 홀드 = NAV, Win+Caps = CapsLock
+- [ ] **Space 홀드 = NAV** (탭 = 일반 Space)
+- [ ] MOUSE 에서 Space = MOUSE OFF (Esc 는 일반 Esc)
+- [ ] NAV(Caps/Space + …): I/J/K/L 방향, U/O Home·End, N/M Bksp·Del
+- [ ] NAV: Q/W/E/R/T 브라우저+새탭, A/S 뒤로·앞으로, D/F 모니터, 휠 H/;/Y/P
+- [ ] MOUSE: I/J/K/L 이동, D/F 클릭, Shift 홀드 = 고정 속도
+- [ ] MOUSE 중 Alt+Tab 정상, MOUSE 중 Caps 홀드 = NAV 폴스루
 - [ ] Fn 키 = 기존 미디어/RGB/BT

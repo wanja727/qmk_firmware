@@ -5,13 +5,17 @@
 
 #pragma once
 
-// 좌 Shift = LSFT_T(HANGEUL_KEYCODE) tap-hold 안정화: Shift+다른키는 즉시 Shift(hold)로 확정.
+// tap-hold(좌Shift = LSFT_T(HANGEUL), Space = LT(NAV,SPC)) 안정화
+//  - Shift+다른키는 즉시 Shift(hold)로 확정
 #define HOLD_ON_OTHER_KEY_PRESS_PER_KEY
+//  - 탭 직후 다시 눌러 홀드해도 "탭 반복"이 아니라 정상 홀드로 처리
+//    (한/영 탭 후 바로 Shift 홀드+A 시 한영이 또 바뀌던 문제 수정)
+#define QUICK_TAP_TERM 0
 
 // ---------------------------------------------------------------------------
 // Mouse keys: Kinetic(부드러운 가속) 모드.
 //   - 천천히 시작(INITIAL_SPEED)해서 부드럽게 가속(BASE_SPEED 까지)
-//   - MOUSE 레이어에서 CapsLock 홀드 = ACL0 = DECELERATED_SPEED(느린 정밀 이동)
+//   - MOUSE 레이어에서 Shift 홀드 = ACL0 = DECELERATED_SPEED(느린 정밀 이동)
 //
 // 아래 값은 모두 **QMK kinetic 기본값**(원작자 의도 기준점). 여기서부터 조정한다.
 //
@@ -35,8 +39,8 @@
 #define MOUSEKEY_MOVE_DELTA 16         // QMK 기본 16
 
 #define MOUSEKEY_INITIAL_SPEED 100     // 초기 속도 (QMK 기본 100)
-#define MOUSEKEY_BASE_SPEED 2000       // 가속 시 도달하는 최고 속도
-#define MOUSEKEY_DECELERATED_SPEED 800 // ACL0 = MOUSE 레이어에서 Shift 홀드 시 고정 속도(base보다 느림)
+#define MOUSEKEY_BASE_SPEED 1000       // 가속 시 도달하는 최고 속도
+#define MOUSEKEY_DECELERATED_SPEED 100 // ACL0 = MOUSE 레이어에서 Shift 홀드 시 고정 속도(base보다 느림)
 #define MOUSEKEY_ACCELERATED_SPEED 3000// ACL2 (현재 미바인딩)
 
 // 휠 (kinetic) — 모두 QMK 기본값

@@ -24,7 +24,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         MC_2,     KC_TAB,   KC_Q,     KC_W,     KC_E,     KC_R,     KC_T,     KC_Y,     KC_U,     KC_I,    KC_O,      KC_P,     KC_LBRC,  KC_RBRC,  KC_BSLS,            KC_PGDN,
         MC_3,     MO_NAV,   KC_A,     KC_S,     KC_D,     KC_F,     KC_G,     KC_H,     KC_J,     KC_K,    KC_L,      KC_SCLN,  KC_QUOT,            KC_ENT,             KC_HOME,
         MC_4,     LSFT_T(HANGEUL_KEYCODE),     KC_Z,     KC_X,     KC_C,     KC_V,     KC_B,     KC_B,     KC_N,    KC_M,      KC_COMM,  KC_DOT,   KC_SLSH,  KC_RSFT,  KC_UP,
-        MC_5,     KC_LCTL,  KC_LOPTN,           KC_LCMMD, KC_SPC, MO(MAC_FN),                    KC_SPC,             KC_RCMMD, KC_RCTL,             KC_LEFT,  KC_DOWN,  KC_RGHT),
+        MC_5,     KC_LCTL,  KC_LOPTN,           KC_LCMMD, LT(NAV, KC_SPC), MO(MAC_FN),                    LT(NAV, KC_SPC),             KC_RCMMD, KC_RCTL,             KC_LEFT,  KC_DOWN,  KC_RGHT),
 
     // FN = 기존 Keychron 미디어/RGB/BT 레이어 (원본 유지)
     [MAC_FN] = LAYOUT_ansi_90(
@@ -41,7 +41,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         MC_2,     KC_TAB,   KC_Q,     KC_W,     KC_E,     KC_R,     KC_T,     KC_Y,     KC_U,     KC_I,     KC_O,     KC_P,     KC_LBRC,  KC_RBRC,  KC_BSLS,            KC_PGDN,
         MC_3,     MO_NAV,   KC_A,     KC_S,     KC_D,     KC_F,     KC_G,     KC_H,     KC_J,     KC_K,     KC_L,     KC_SCLN,  KC_QUOT,            KC_ENT,             KC_HOME,
         MC_4,     LSFT_T(HANGEUL_KEYCODE),     KC_Z,     KC_X,     KC_C,     KC_V,     KC_B,     KC_B,     KC_N,     KC_M,     KC_COMM,  KC_DOT,   KC_SLSH,  KC_RSFT,  KC_UP,
-        MC_5,     KC_LCTL,  KC_LWIN,            KC_LALT,  KC_SPC, MO(WIN_FN),                    KC_SPC,             KC_RALT,  KC_RCTL,            KC_LEFT,  KC_DOWN,  KC_RGHT),
+        MC_5,     KC_LCTL,  KC_LWIN,            KC_LALT,  LT(NAV, KC_SPC), MO(WIN_FN),                    LT(NAV, KC_SPC),             KC_RALT,  KC_RCTL,            KC_LEFT,  KC_DOWN,  KC_RGHT),
 
     [WIN_FN] = LAYOUT_ansi_90(
         UG_TOGG,  _______,  KC_BRID,  KC_BRIU,  KC_TASK,  KC_FILE,  UG_VALD,  UG_VALU,  KC_MPRV,  KC_MPLY,  KC_MNXT,  KC_MUTE,  KC_VOLD,  KC_VOLU,  _______,            _______,
@@ -55,14 +55,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [NAV] = LAYOUT_ansi_90(
         _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
         _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
-        _______,  _______,  _______,  LCTL(LSFT(KC_TAB)),LCTL(KC_TAB),LCTL(KC_W),LALT(KC_F4),MS_WHLL,KC_HOME,KC_UP,KC_END,MS_WHLR,_______,_______,_______,            _______,
-        _______,  _______,  _______,  MS_BTN4,  LGUI(LSFT(KC_LEFT)),LGUI(LSFT(KC_RGHT)),MS_BTN5,MS_WHLU,KC_LEFT,KC_DOWN,KC_RGHT,MS_WHLD,_______,            _______,            _______,
+        _______,  _______,  LCTL(LSFT(KC_TAB)),LCTL(KC_TAB),LCTL(KC_W),LALT(KC_F4),LCTL(KC_T),MS_WHLL,KC_HOME,KC_UP,KC_END,MS_WHLR,_______,_______,_______,            _______,
+        _______,  _______,  MS_BTN4,  MS_BTN5,  LGUI(LSFT(KC_LEFT)),LGUI(LSFT(KC_RGHT)),_______,MS_WHLU,KC_LEFT,KC_DOWN,KC_RGHT,MS_WHLD,_______,            _______,            _______,
         _______,  _______,            _______,  _______,  _______,  _______,  _______,  _______,  KC_BSPC,  KC_DEL,   _______,  _______,  _______,  _______,  _______,
         _______,  _______,  _______,            _______,  _______,  _______,                      _______,            _______,  _______,            _______,  _______,  _______),
 
     // MOUSE = Caps tap 으로 ON / Space·Esc 로 OFF. Shift=MS_ACL0(고정 속도). 휠 H/;/Y/P
     [MOUSE] = LAYOUT_ansi_90(
-        _______,  MS_OFF,   _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
+        _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
         _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,  _______,            _______,
         _______,  _______,  _______,  _______,  _______,  _______,  _______,  MS_WHLL,  _______,  MS_UP,    _______,  MS_WHLR,  _______,  _______,  _______,            _______,
         _______,  _______,  _______,  _______,  MS_BTN1,  MS_BTN2,  _______,  MS_WHLU,  MS_LEFT,  MS_DOWN, MS_RGHT,  MS_WHLD,  _______,            _______,            _______,
