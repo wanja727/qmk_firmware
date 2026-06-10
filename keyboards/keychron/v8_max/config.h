@@ -32,7 +32,10 @@
 
 /* SNLED27351 Driver Configuration */
 #if defined(RGB_MATRIX_ENABLE)
-#    define SNLED27351_SDB_PIN B9
+// wanja727 fix: upstream 2025q3 had SDB_PIN B9, which collides with cs_pins[1] (B9 in
+// SELECT_PINS) -> SPI select pulls the SDB/shutdown line low and all LEDs stay dead.
+// Sibling boards k7/k11/k15 (identical SELECT_PINS {B8,B9}) all use SDB_PIN B7.
+#    define SNLED27351_SDB_PIN B7
 #    define SNLED27351_SELECT_PINS \
         { B8, B9 }
 #    define SNLED27351_SPI_DIVISOR 16
