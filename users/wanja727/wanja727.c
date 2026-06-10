@@ -24,6 +24,13 @@ static bool     caps_nav_on      = false; // Caps 로 인해 NAV 가 켜져 있�
 static bool     caps_interrupted = false; // 누른 동안 다른 키가 눌림 -> hold(NAV) 확정
 static uint16_t caps_time        = 0;
 
+// ---- MOUSE 의 Space(MS_OFF) tap-hold state ----
+//   tap = MOUSE OFF,  hold/조합 = NAV layer
+static bool     msoff_held        = false;
+static bool     msoff_nav_on      = false;
+static bool     msoff_interrupted = false;
+static uint16_t msoff_time        = 0;
+
 // ---- Alt+Tab task switcher state ----
 // Alt 는 ALT_TAB 을 처음 누른 시점의 레이어(NAV/MOUSE)가 활성인 동안 유지된다.
 static bool    alt_tab_active = false;
@@ -33,6 +40,10 @@ bool wanja_process_record(uint16_t keycode, keyrecord_t *record, uint8_t nav_lay
     // Caps tap-hold: 누르고 있는 동안 다른 키가 눌리면 hold(NAV)로 확정 (tap=MOUSE ON 취소)
     if (caps_held && record->event.pressed && keycode != MO_NAV) {
         caps_interrupted = true;
+    }
+    // MOUSE Space tap-hold: 누르고 있는 동안 다른 키가 눌리면 hold(NAV)로 확정 (tap=MOUSE OFF 취소)
+    if (msoff_held && record->event.pressed && keycode != MS_OFF) {
+        msoff_interrupted = true;
     }
 
     // --- Number row: tap = number, hold = F1~F12 ---
@@ -79,10 +90,26 @@ bool wanja_process_record(uint16_t keycode, keyrecord_t *record, uint8_t nav_lay
         return false;
     }
 
-    // --- MOUSE 레이어 OFF (MOUSE 의 Space / Esc) ---
+    // --- MOUSE 의 Space: tap = MOUSE OFF / hold(또는 조합) = NAV ---
     if (keycode == MS_OFF) {
         if (record->event.pressed) {
-            layer_off(mouse_layer);
+            msoff_held        = true;
+            msoff_interrupted = false;
+            msoff_time        = record->event.time;
+            layer_on(nav_layer); // 홀드 동안 NAV 사용 (NAV > MOUSE 라서 ijkl 등도 NAV 로 동작)
+            msoff_nav_on = true;
+        } else {
+            if (msoff_nav_on) {
+                layer_off(nav_layer);
+                msoff_nav_on = false;
+            }
+            if (msoff_held) {
+                msoff_held = false;
+                // 짧게 눌렀고(다른 키 조합 없음) -> tap = MOUSE OFF
+                if (!msoff_interrupted && timer_elapsed(msoff_time) < TAPPING_TERM) {
+                    layer_off(mouse_layer);
+                }
+            }
         }
         return false;
     }

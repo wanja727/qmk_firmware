@@ -48,14 +48,14 @@
 ## 3. MOUSE 레이어 (Caps tap = ON / Space = OFF)
 
 - 진입: **Caps 탭** (항상 ON)
-- 해제: MOUSE 안에서 **Space** (항상 OFF). Space 는 실제 입력이 아니라 MOUSE OFF 동작.
-  (MOUSE 꺼진 일반 상태에서는 Space = 정상 Space / 홀드 = NAV)
+- 해제/NAV: MOUSE 안에서 **Space 탭 = MOUSE OFF**, **Space 홀드 = NAV**. (탭은 실제 Space 입력이
+  아니라 MOUSE OFF 동작. MOUSE 꺼진 일반 상태에서는 Space 탭 = 정상 Space.)
 
 | 키 | 동작 | 키 | 동작 |
 |---|---|---|---|
 | `I`/`J`/`K`/`L` | 마우스 ↑ / ← / ↓ / → | `D` / `F` | 왼쪽 / 오른쪽 클릭 (BTN1 / BTN2) |
 | `H` / `;` / `Y` / `P` | 휠 업/다운/좌/우 | **`Shift` (hold)** | **고정 속도 이동 (MS_ACL0)** |
-| `Space` | MOUSE OFF | **`Caps` + …** | NAV 사용 (뒤로/앞으로·브라우저·모니터) |
+| `Space` 탭 / 홀드 | MOUSE OFF / NAV | **`Caps` 홀드** | NAV (뒤로/앞으로·브라우저·모니터·방향) |
 
 > - MOUSE 에서 Shift 는 일반 Shift 가 아니라 **고정 속도(MS_ACL0)** 전용입니다(Shift 입력 안 나감).
 > - **MOUSE 사용 중 Caps 를 누르고 있으면 NAV 전체가 덮어쓴다.** 즉 `Caps+ijkl`=방향키,
