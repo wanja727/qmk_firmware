@@ -12,14 +12,16 @@
 
 | 레이어 | 진입 | 설명 |
 |--------|------|------|
-| **BASE** | 기본 | 타이핑. 숫자열 tap=숫자/hold=F1~F12. 좌Shift tap=한/영. Caps tap=MOUSE ON. |
+| **BASE** | 기본 | 타이핑. 숫자열 tap=숫자/hold=F1~F12. 좌Shift=일반 Shift. Caps tap=MOUSE ON. |
 | **FN1** (media) | Fn 키 hold | 기존 Keychron 미디어/RGB/BT/밝기/볼륨/BT_HST/NKRO (원본 유지). |
 | **NAV** | **CapsLock hold** 또는 **Space hold** | 방향/편집/브라우저/창/모니터/휠. |
-| **MOUSE** | **Caps tap = ON** / **Space = OFF** | 마우스 이동/버튼/휠. Shift=고정속도. |
+| **MOUSE** | **Caps tap = ON** / **Shift tap = OFF** | 마우스 이동/버튼/휠. 문자 입력 키 누르면 자동 OFF. |
 
 - **NAV 진입은 Caps 홀드 또는 Space 홀드** 둘 다 가능. (Space = `LT(NAV, KC_SPC)`: 탭=Space,
   홀드=NAV. Caps 가 한 칸 왼쪽이라 손이 치우치는 걸 보완하려고 엄지 Space 도 NAV mod 로 추가.)
-- **MOUSE 는 toggle 이 아님.** Caps 를 **탭**하면 항상 ON(`layer_on`). 끄는 건 MOUSE 안의 **Space**(OFF).
+- **MOUSE 는 toggle 이 아님.** Caps 를 **탭**하면 항상 ON(`layer_on`). 끄는 건 **Shift 탭 = MOUSE OFF**
+  (항상 OFF), 또는 **문자 입력 키를 누르면 그 키 입력 후 자동 OFF**(BASE 복귀).
+- 우측 Alt 한/영은 OS 단에서 이미 동작 → 펌웨어에서 따로 매핑하지 않음(기존 동작 유지).
 - Fn 키 = 미디어. (K7/K11/V8 오른쪽 두 Fn 모두 미디어, K15 는 Fn = 미디어 / 오른쪽 Ctrl 은 Right Ctrl)
 
 ---
@@ -45,23 +47,30 @@
 
 ---
 
-## 3. MOUSE 레이어 (Caps tap = ON / Space = OFF)
+## 3. MOUSE 레이어 (Caps tap = ON / Shift tap = OFF)
 
 - 진입: **Caps 탭** (항상 ON)
-- 해제/NAV: MOUSE 안에서 **Space 탭 = MOUSE OFF**, **Space 홀드 = NAV**. (탭은 실제 Space 입력이
-  아니라 MOUSE OFF 동작. MOUSE 꺼진 일반 상태에서는 Space 탭 = 정상 Space.)
+- 해제(OFF):
+  - **좌Shift 탭 = MOUSE OFF**(항상 OFF), **좌Shift 홀드 = 일반 Shift**.
+  - **문자 입력 키(알파벳·숫자·기호·Space 등)를 누르면** 그 키가 그대로 입력되면서 **자동으로 MOUSE
+    OFF → BASE 복귀**. (OS 한/영 상태와 무관하게 동작.)
+  - **Space 탭 = Space 입력 + MOUSE OFF**(문자 입력 취급), **Space 홀드 = NAV**.
 
 | 키 | 동작 | 키 | 동작 |
 |---|---|---|---|
 | `I`/`J`/`K`/`L` | 마우스 ↑ / ← / ↓ / → | `D` / `F` | 왼쪽 / 오른쪽 클릭 (BTN1 / BTN2) |
-| `H` / `;` / `Y` / `P` | 휠 업/다운/좌/우 | **`Shift` (hold)** | **고정 속도 이동 (MS_ACL0)** |
-| `Space` 탭 / 홀드 | MOUSE OFF / NAV | **`Caps` 홀드** | NAV (뒤로/앞으로·브라우저·모니터·방향) |
+| `H` / `;` / `Y` / `P` | 휠 업/다운/좌/우 | **`Shift` 탭 / 홀드** | **MOUSE OFF / 일반 Shift** |
+| `Space` 탭 / 홀드 | Space 입력+MOUSE OFF / NAV | **`Caps` 홀드** | NAV (뒤로/앞으로·브라우저·모니터·방향) |
 
-> - MOUSE 에서 Shift 는 일반 Shift 가 아니라 **고정 속도(MS_ACL0)** 전용입니다(Shift 입력 안 나감).
+> - **자동 BASE 복귀 대상 = '문자 입력' 키만**(알파벳·숫자·기호·Space). 마우스
+>   이동/클릭/휠, NAV 키, modifier, layer/커스텀 제어 키, media, **encoder 회전/클릭**은 대상이 아니며
+>   MOUSE 가 유지됩니다.
+> - **Space 홀드로 NAV 사용 중에는 auto-off 가 일어나지 않습니다**(NAV 활성 시 예외 처리).
 > - **MOUSE 사용 중 Caps 를 누르고 있으면 NAV 전체가 덮어쓴다.** 즉 `Caps+ijkl`=방향키,
->   `Caps+D/F`=모니터 이동, `Caps+W/E/R/T`=브라우저, `Caps+S/G`=뒤로/앞으로 등 NAV 기능을
+>   `Caps+D/F`=모니터 이동, `Caps+W/E/R/T`=브라우저, `Caps+A/S`=뒤로/앞으로 등 NAV 기능을
 >   그대로 사용. Caps 를 떼면 다시 MOUSE. (이를 위해 **레이어 순서를 NAV > MOUSE** 로 둠 — ijkl·d/f
 >   처럼 MOUSE 에도 매핑된 키까지 NAV 가 덮어쓰려면 NAV 가 위에 있어야 함.)
+> - **knob/encoder**: BASE·NAV·MOUSE 모두 **회전=볼륨, 클릭=음소거**로 통일(MOUSE 의 휠 매핑 제거).
 
 ---
 
@@ -72,17 +81,16 @@ Fn 키를 누르면 기존과 똑같이 밝기/볼륨/미디어/블루투스(BT_
 
 ---
 
-## 5. 한/영 전환 = 좌 Shift 탭
+## 5. 한/영 전환 (우측 Alt, OS 단)
 
-- **왼쪽 Shift 탭 = 한/영 전환**, **왼쪽 Shift 홀드 = 일반 Shift** (`LSFT_T(HANGEUL_KEYCODE)`).
-- Shift 를 누른 채 다른 키를 누르면 즉시 Shift(hold)로 확정되어, Shift+키 입력이 한/영으로
-  오판되지 않습니다 (`get_hold_on_other_key_press`).
-- **한→영 직후 바로 대문자(Shift 홀드+A)** 입력 시 한/영이 두 번 바뀌던 문제는 `QUICK_TAP_TERM 0`
-  으로 수정했습니다(탭 직후 홀드를 "탭 반복"이 아니라 정상 Shift 홀드로 처리).
-- 한/영 keycode 는 1순위 `KC_LNG1`. 안 되면 `users/wanja727/wanja727.h` 에서 변경:
+- **좌Shift 는 BASE 에서 순수 일반 Shift** 입니다. (이전의 `좌Shift 탭 = 한/영` 동작은 제거됨)
+- 한/영 전환은 **우측 Alt** 로 OS 단에서 이미 동작하므로 펌웨어에서 별도 매핑하지 않습니다.
+  (이번 작업에서 우측 Alt 매핑을 새로 추가/변경하지 않음)
+- `HANGEUL_KEYCODE` 정의(`KC_LNG1`)는 (미사용)`HANGEUL` 커스텀 키코드 핸들러가 참조하므로
+  정의만 유지합니다. 현재 키맵엔 배치돼 있지 않고, auto-off 판정 대상도 아닙니다.
 
 ```c
-#define HANGEUL_KEYCODE KC_LNG1   // 기본
+#define HANGEUL_KEYCODE KC_LNG1   // 기본 (현재 키맵엔 미배치)
 // #define HANGEUL_KEYCODE KC_RALT // 우측 Alt 를 한/영으로 쓰는 환경
 ```
 
@@ -104,9 +112,10 @@ Fn 키를 누르면 기존과 똑같이 밝기/볼륨/미디어/블루투스(BT_
 ## 7. 마우스 속도 (Kinetic 가속)
 
 - **Kinetic(부드러운 가속) 모드.** 살짝 누르면 한 스텝(정밀), 계속 누르면 가속(최고 `BASE_SPEED`).
-- MOUSE 에서 **Shift 홀드 = `MS_ACL0` 고정 속도**(`DECELERATED_SPEED`). base 보다 느린 일정 속도라
-  정밀/안정 이동에 사용. (base 보다 낮은 값이므로 가속이 아니라 감속 의미 → ACL0 사용)
-- `users/wanja727/config.h` 현재값: `BASE_SPEED 2000`, `DECELERATED_SPEED 800`(Shift 고정속도).
+- **MOUSE 의 Shift 저속이동(MS_ACL0) 기능은 제거**되었습니다. 이제 MOUSE 의 좌Shift 는
+  `MS_OFF_SFT`(탭=MOUSE OFF / 홀드=일반 Shift)입니다. `DECELERATED_SPEED` 값은 kinetic
+  알고리즘용으로 config.h 에 남겨두지만 더 이상 키에 바인딩하지 않습니다.
+- `users/wanja727/config.h` 현재값: `BASE_SPEED 1000`, `INITIAL_SPEED 100`.
 - **OS 가속 구분:** Windows 포인터 속도/"포인터 정밀도 향상"이 곱해집니다. 일정/정밀하게 쓰려면
   *Windows 설정 > 마우스 > 포인터 옵션* 에서 "포인터 정밀도 향상"을 끄는 것을 권장.
 
@@ -120,8 +129,13 @@ Fn 키를 누르면 기존과 똑같이 밝기/볼륨/미디어/블루투스(BT_
 
 ## 9. 커스텀 키코드 / 코어 패치
 
-- custom keycode: `NUM_F1~12`(숫자/F열), `MO_NAV`(Caps), `MS_OFF`(MOUSE 끄기). VIA UI 에는 raw 로
-  보이며 직접 편집은 제한적 — 동작은 펌웨어에 고정.
+- custom keycode: `NUM_F1~12`(숫자/F열), `MO_NAV`(Caps tap=MOUSE ON / hold=NAV),
+  `MS_OFF_SFT`(MOUSE 좌Shift: 탭=MOUSE OFF / 홀드=일반 Shift). VIA UI 에는 raw 로 보이며
+  직접 편집은 제한적 — 동작은 펌웨어에 고정.
+- **MOUSE 자동 BASE 복귀**: `process_record_user` → `wanja_process_record` 에서 MOUSE 활성 &
+  NAV 비활성일 때 '문자 입력' 키(`is_text_input_key()`: 알파벳/숫자/기호/Space)면
+  키 입력은 그대로 통과시키고 `layer_off(MOUSE)`. 숫자열(NUM_F)·Space(LT)는 keycode 형태가
+  달라 각자 분기에서 처리(Space 는 LT tap 일 때만 OFF). encoder/마우스/NAV/modifier 는 비대상.
 - **코어 패치** `quantum/mousekey.c`: kinetic `mouse_timer` 를 이동/휠 키에서만 시작하도록 수정
   (마우스 버튼을 오래 누른 뒤 이동 시 커서가 튀는 버그 수정). `upstream` 머지 시 충돌 나면 재적용.
 
@@ -150,13 +164,19 @@ push 하면 GitHub Actions 가 4개 보드를 빌드해 `.bin`/`.hex` artifact �
 ## 검증 체크리스트
 
 - [ ] 4개 보드 컴파일 / VIA 인식 / BASE 타이핑 정상
-- [ ] 좌Shift 탭 = 한/영, 좌Shift+키 = 일반 Shift
-- [ ] **한→영 직후 Shift 홀드+A = 대문자 A** (한영 2번 안 됨 / QUICK_TAP_TERM 0)
+- [ ] BASE 좌Shift = 일반 Shift (탭해도 한/영 전환 안 됨)
+- [ ] 우측 Alt 한/영 = 기존 동작 그대로 (변경 없음)
 - [ ] Caps 탭 = MOUSE ON, Caps 홀드 = NAV, Win+Caps = CapsLock
-- [ ] **Space 홀드 = NAV** (탭 = 일반 Space)
-- [ ] MOUSE 에서 Space = MOUSE OFF (Esc 는 일반 Esc)
+- [ ] **Space 탭 = Space**, **Space 홀드 = NAV** (BASE)
+- [ ] MOUSE: Shift 탭 = MOUSE OFF, Shift 홀드 = 일반 Shift
+- [ ] MOUSE: Space 탭 = Space 입력 + MOUSE OFF, Space 홀드 = NAV
+- [ ] MOUSE: Space 홀드로 NAV 사용 중 auto-off 안 일어남
+- [ ] MOUSE: I/J/K/L 이동·D/F 클릭·휠 = MOUSE 유지
+- [ ] MOUSE: A/숫자/기호 입력 = 해당 키 입력 + MOUSE OFF (한/영 상태 무관)
+- [ ] MOUSE: modifier/media/layer/custom 키는 auto-off 오판 없음
+- [ ] BASE/NAV/MOUSE knob 회전 = 볼륨, 클릭 = 음소거 (MOUSE 휠 매핑 제거)
+- [ ] MOUSE 에서 knob 회전/클릭으로 MOUSE 자동 OFF 안 됨
 - [ ] NAV(Caps/Space + …): I/J/K/L 방향, U/O Home·End, N/M Bksp·Del
 - [ ] NAV: Q/W/E/R/T 브라우저+새탭, A/S 뒤로·앞으로, D/F 모니터, 휠 H/;/Y/P
-- [ ] MOUSE: I/J/K/L 이동, D/F 클릭, Shift 홀드 = 고정 속도
-- [ ] MOUSE 중 Alt+Tab 정상, MOUSE 중 Caps 홀드 = NAV 폴스루
-- [ ] Fn 키 = 기존 미디어/RGB/BT
+- [ ] MOUSE 중 Caps 홀드 = NAV 폴스루
+- [ ] Fn 키 = 기존 미디어/RGB/BT, 숫자열 tap/hold 정상

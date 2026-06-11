@@ -43,12 +43,14 @@ enum wanja_keycodes {
     //   hold/조합  = NAV layer
     //   Win + this = 기존 Caps Lock
     MO_NAV,
-    // (사용 안 함) 한/영 키코드 슬롯. 한/영은 이제 좌Shift = LSFT_T(HANGEUL_KEYCODE) 로 처리.
+    // (사용 안 함) 한/영 키코드 슬롯. 직접 누르면 HANGEUL_KEYCODE 를 보낸다(현재 키맵엔 미배치).
     HANGEUL,
     // (사용 안 함) 슬롯 유지. (VIA 키코드 값 안정성)
     ALT_TAB,
-    // MOUSE 레이어 OFF (layer_off). MOUSE 의 Space / Esc 에 매핑.
-    MS_OFF,
+    // MOUSE 레이어의 좌Shift (custom tap-hold):
+    //   tap        = MOUSE 레이어 OFF (layer_off, Shift 입력 없음)
+    //   hold/조합  = 일반 Shift (KC_LSFT)
+    MS_OFF_SFT,
 };
 
 // Shared hooks. Each board's keymap forwards process_record_user / matrix_scan_user here.

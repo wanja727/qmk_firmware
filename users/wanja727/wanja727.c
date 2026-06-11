@@ -18,32 +18,51 @@ static bool     numf_sent[12] = {false};
 static uint16_t numf_time[12] = {0};
 
 // ---- NAV (CapsLock tap-hold) state ----
-//   tap   = 한/영,  hold/조합 = NAV layer,  Win+Caps = Caps Lock
+//   tap   = MOUSE ON,  hold/조합 = NAV layer,  Win+Caps = Caps Lock
 static bool     caps_held        = false; // tap-hold 세션 진행 중
 static bool     caps_nav_on      = false; // Caps 로 인해 NAV 가 켜져 있음
 static bool     caps_interrupted = false; // 누른 동안 다른 키가 눌림 -> hold(NAV) 확정
 static uint16_t caps_time        = 0;
 
-// ---- MOUSE 의 Space(MS_OFF) tap-hold state ----
-//   tap = MOUSE OFF,  hold/조합 = NAV layer
-static bool     msoff_held        = false;
-static bool     msoff_nav_on      = false;
-static bool     msoff_interrupted = false;
-static uint16_t msoff_time        = 0;
+// ---- MOUSE 좌Shift(MS_OFF_SFT) tap-hold state ----
+//   tap = MOUSE OFF,  hold/조합 = 일반 Shift(KC_LSFT)
+static bool     msoffsft_held        = false;
+static bool     msoffsft_shift_on    = false; // KC_LSFT 를 register 한 상태
+static bool     msoffsft_interrupted = false;
+static uint16_t msoffsft_time        = 0;
 
-// ---- Alt+Tab task switcher state ----
-// Alt 는 ALT_TAB 을 처음 누른 시점의 레이어(NAV/MOUSE)가 활성인 동안 유지된다.
+// ---- Alt+Tab task switcher state (미사용, 슬롯 유지) ----
 static bool    alt_tab_active = false;
 static uint8_t alt_tab_layer  = 0;
+
+// MOUSE 레이어에서 누르면 "해당 키 입력 + 자동 BASE 복귀(layer_off)" 대상인 '문자 입력' 키인가?
+//  - 알파벳/숫자/기호/Space 만 대상.
+//  - 마우스/NAV/modifier/media/layer/encoder 키는 대상 아님(여기서 false).
+//  - 숫자열(NUM_F*)·Space(LT)는 keycode 형태가 달라 별도 분기에서 처리한다.
+static bool is_text_input_key(uint16_t keycode) {
+    if (keycode >= KC_A && keycode <= KC_0) return true; // A~Z, 1~0
+    switch (keycode) {
+        case KC_MINS: case KC_EQL:  case KC_LBRC: case KC_RBRC:
+        case KC_BSLS: case KC_SCLN: case KC_QUOT: case KC_GRV:
+        case KC_COMM: case KC_DOT:  case KC_SLSH: case KC_SPC:
+            return true;
+    }
+    return false;
+}
 
 bool wanja_process_record(uint16_t keycode, keyrecord_t *record, uint8_t nav_layer, uint8_t mouse_layer) {
     // Caps tap-hold: 누르고 있는 동안 다른 키가 눌리면 hold(NAV)로 확정 (tap=MOUSE ON 취소)
     if (caps_held && record->event.pressed && keycode != MO_NAV) {
         caps_interrupted = true;
     }
-    // MOUSE Space tap-hold: 누르고 있는 동안 다른 키가 눌리면 hold(NAV)로 확정 (tap=MOUSE OFF 취소)
-    if (msoff_held && record->event.pressed && keycode != MS_OFF) {
-        msoff_interrupted = true;
+    // MOUSE 좌Shift tap-hold: 다른 키가 같이 눌리면 hold(Shift)로 확정하고 즉시 Shift 를 눌러
+    // Shift+키 조합이 정상 동작하게 한다 (tap=MOUSE OFF 취소).
+    if (msoffsft_held && record->event.pressed && keycode != MS_OFF_SFT) {
+        msoffsft_interrupted = true;
+        if (!msoffsft_shift_on) {
+            register_code(KC_LSFT);
+            msoffsft_shift_on = true;
+        }
     }
 
     // --- Number row: tap = number, hold = F1~F12 ---
@@ -56,7 +75,11 @@ bool wanja_process_record(uint16_t keycode, keyrecord_t *record, uint8_t nav_lay
         } else {
             numf_held[idx] = false;
             if (!numf_sent[idx]) {
-                tap_code16(tap_kc[idx]);
+                tap_code16(tap_kc[idx]); // tap = 숫자/기호 (문자 입력)
+                // 문자 입력 -> MOUSE 자동 OFF (NAV 사용 중에는 제외)
+                if (layer_state_is(mouse_layer) && !layer_state_is(nav_layer)) {
+                    layer_off(mouse_layer);
+                }
             }
         }
         return false;
@@ -90,31 +113,31 @@ bool wanja_process_record(uint16_t keycode, keyrecord_t *record, uint8_t nav_lay
         return false;
     }
 
-    // --- MOUSE 의 Space: tap = MOUSE OFF / hold(또는 조합) = NAV ---
-    if (keycode == MS_OFF) {
+    // --- MOUSE 좌Shift: tap = MOUSE OFF / hold(또는 조합) = 일반 Shift ---
+    if (keycode == MS_OFF_SFT) {
         if (record->event.pressed) {
-            msoff_held        = true;
-            msoff_interrupted = false;
-            msoff_time        = record->event.time;
-            layer_on(nav_layer); // 홀드 동안 NAV 사용 (NAV > MOUSE 라서 ijkl 등도 NAV 로 동작)
-            msoff_nav_on = true;
+            msoffsft_held        = true;
+            msoffsft_interrupted = false;
+            msoffsft_shift_on    = false;
+            msoffsft_time        = record->event.time;
+            // press 시점엔 Shift 를 누르지 않는다(탭이면 Shift 입력이 남지 않도록).
         } else {
-            if (msoff_nav_on) {
-                layer_off(nav_layer);
-                msoff_nav_on = false;
-            }
-            if (msoff_held) {
-                msoff_held = false;
-                // 짧게 눌렀고(다른 키 조합 없음) -> tap = MOUSE OFF
-                if (!msoff_interrupted && timer_elapsed(msoff_time) < TAPPING_TERM) {
+            if (msoffsft_held) {
+                msoffsft_held = false;
+                // 짧게 눌렀고(조합 없음) -> tap = MOUSE OFF (Shift 입력 없음)
+                if (!msoffsft_interrupted && timer_elapsed(msoffsft_time) < TAPPING_TERM) {
                     layer_off(mouse_layer);
                 }
+            }
+            if (msoffsft_shift_on) {
+                unregister_code(KC_LSFT);
+                msoffsft_shift_on = false;
             }
         }
         return false;
     }
 
-    // --- (미사용) 한/영 키코드 ---
+    // --- (미사용) 한/영 키코드 직접 입력 슬롯 ---
     if (keycode == HANGEUL) {
         if (record->event.pressed) {
             tap_code16(HANGEUL_KEYCODE);
@@ -122,31 +145,43 @@ bool wanja_process_record(uint16_t keycode, keyrecord_t *record, uint8_t nav_lay
         return false;
     }
 
-    // --- Alt+Tab task switcher (Alt stays held while the trigger layer is active) ---
+    // --- (미사용) Alt+Tab task switcher 슬롯 ---
     if (keycode == ALT_TAB) {
         if (record->event.pressed) {
             if (!alt_tab_active) {
                 alt_tab_active = true;
-                alt_tab_layer  = get_highest_layer(layer_state); // NAV or MOUSE
+                alt_tab_layer  = get_highest_layer(layer_state);
                 register_code(KC_LALT);
             }
-            register_code(KC_TAB); // 누르고 있으면 반복, 탭하면 한 칸씩 전환 (Shift 동시押 = 역방향)
+            register_code(KC_TAB);
         } else {
             unregister_code(KC_TAB);
         }
         return false;
     }
 
-    return true;
-}
-
-// 좌 Shift = LSFT_T(HANGEUL_KEYCODE): tap = 한/영, hold = Shift.
-// 다른 키가 같이 눌리면 즉시 hold(Shift)로 확정 -> Shift+키 입력이 한/영으로 오판되지 않음.
-bool get_hold_on_other_key_press(uint16_t keycode, keyrecord_t *record) {
-    if (keycode == LSFT_T(HANGEUL_KEYCODE)) {
-        return true;
+    // --- Space = LT(NAV, KC_SPC): MOUSE 에서 tap 하면 Space 입력 + MOUSE OFF ---
+    //   hold = NAV 진입(LT 기본 동작). hold 중(NAV 활성)에는 auto-off 안 함.
+    if (keycode == (uint16_t)(QK_LAYER_TAP | (((uint16_t)nav_layer & 0xF) << 8) | KC_SPC)) {
+        if (!record->event.pressed && record->tap.count > 0) {
+            // tap 으로 확정 (실제 Space 는 LT 코어가 입력). 문자 입력이므로 MOUSE OFF.
+            if (layer_state_is(mouse_layer) && !layer_state_is(nav_layer)) {
+                layer_off(mouse_layer);
+            }
+        }
+        return true; // LT 기본 처리(tap=Space, hold=NAV)에 맡긴다
     }
-    return false;
+
+    // --- 문자 입력 키 auto-off: MOUSE 활성 & NAV 비활성일 때만, 문자 입력 키면 ---
+    //   해당 키는 그대로 입력되고(return true) MOUSE 레이어는 OFF 되어 BASE 로 복귀.
+    if (record->event.pressed
+        && layer_state_is(mouse_layer)
+        && !layer_state_is(nav_layer)
+        && is_text_input_key(keycode)) {
+        layer_off(mouse_layer);
+    }
+
+    return true;
 }
 
 void wanja_matrix_scan(void) {
@@ -157,7 +192,7 @@ void wanja_matrix_scan(void) {
             numf_sent[i] = true;
         }
     }
-    // Alt+Tab: 진입했던 레이어(Caps/FN1)를 떼면 Alt 를 풀어 선택을 확정한다.
+    // Alt+Tab(미사용): 진입했던 레이어를 떼면 Alt 를 풀어 선택을 확정한다.
     if (alt_tab_active && !layer_state_is(alt_tab_layer)) {
         unregister_code(KC_LALT);
         alt_tab_active = false;
