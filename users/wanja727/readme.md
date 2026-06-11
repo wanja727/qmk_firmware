@@ -52,9 +52,12 @@
 - 진입: **Caps 탭** (항상 ON)
 - 해제(OFF):
   - **좌Shift 탭 = MOUSE OFF**(항상 OFF), **좌Shift 홀드 = 일반 Shift**.
-  - **문자 입력 키(알파벳·숫자·기호·Space 등)를 누르면** 그 키가 그대로 입력되면서 **자동으로 MOUSE
-    OFF → BASE 복귀**. (OS 한/영 상태와 무관하게 동작.)
+  - **문자 입력 키(알파벳·숫자·기호·Space·우측 Alt(한/영))를 누르면** 그 키가 그대로 입력되면서
+    **자동으로 MOUSE OFF → BASE 복귀**. (OS 한/영 상태와 무관하게 동작.)
   - **Space 탭 = Space 입력 + MOUSE OFF**(문자 입력 취급), **Space 홀드 = NAV**.
+  - **단, `Ctrl`/`Alt`/`GUI` 가 눌려 있는 동안(=단축키 조합)에는 auto-off 하지 않음.** 예: 마우스로
+    단어 블럭 지정 후 `Ctrl+C`/`Ctrl+V` 해도 MOUSE 유지. (Shift 는 예외 — Shift+글자=대문자라
+    여전히 문자 입력으로 보고 auto-off.)
 
 | 키 | 동작 | 키 | 동작 |
 |---|---|---|---|
@@ -62,9 +65,9 @@
 | `H` / `;` / `Y` / `P` | 휠 업/다운/좌/우 | **`Shift` 탭 / 홀드** | **MOUSE OFF / 일반 Shift** |
 | `Space` 탭 / 홀드 | Space 입력+MOUSE OFF / NAV | **`Caps` 홀드** | NAV (뒤로/앞으로·브라우저·모니터·방향) |
 
-> - **자동 BASE 복귀 대상 = '문자 입력' 키만**(알파벳·숫자·기호·Space). 마우스
+> - **자동 BASE 복귀 대상 = '문자 입력' 키만**(알파벳·숫자·기호·Space·우측 Alt(한/영)). 마우스
 >   이동/클릭/휠, NAV 키, modifier, layer/커스텀 제어 키, media, **encoder 회전/클릭**은 대상이 아니며
->   MOUSE 가 유지됩니다.
+>   MOUSE 가 유지됩니다. **Ctrl/Alt/GUI 조합(단축키) 중에도 auto-off 안 함**(Shift 조합은 auto-off 유지).
 > - **Space 홀드로 NAV 사용 중에는 auto-off 가 일어나지 않습니다**(NAV 활성 시 예외 처리).
 > - **MOUSE 사용 중 Caps 를 누르고 있으면 NAV 전체가 덮어쓴다.** 즉 `Caps+ijkl`=방향키,
 >   `Caps+D/F`=모니터 이동, `Caps+W/E/R/T`=브라우저, `Caps+A/S`=뒤로/앞으로 등 NAV 기능을
@@ -132,10 +135,11 @@ Fn 키를 누르면 기존과 똑같이 밝기/볼륨/미디어/블루투스(BT_
 - custom keycode: `NUM_F1~12`(숫자/F열), `MO_NAV`(Caps tap=MOUSE ON / hold=NAV),
   `MS_OFF_SFT`(MOUSE 좌Shift: 탭=MOUSE OFF / 홀드=일반 Shift). VIA UI 에는 raw 로 보이며
   직접 편집은 제한적 — 동작은 펌웨어에 고정.
-- **MOUSE 자동 BASE 복귀**: `process_record_user` → `wanja_process_record` 에서 MOUSE 활성 &
-  NAV 비활성일 때 '문자 입력' 키(`is_text_input_key()`: 알파벳/숫자/기호/Space)면
-  키 입력은 그대로 통과시키고 `layer_off(MOUSE)`. 숫자열(NUM_F)·Space(LT)는 keycode 형태가
-  달라 각자 분기에서 처리(Space 는 LT tap 일 때만 OFF). encoder/마우스/NAV/modifier 는 비대상.
+- **MOUSE 자동 BASE 복귀**: `process_record_user` → `wanja_process_record`. `is_text_input_key()`
+  (알파벳/숫자/기호/Space/우측 Alt)이고 `mouse_auto_off_armed()`(MOUSE 활성 & NAV 비활성 &
+  Ctrl/Alt/GUI 미사용)이면 키는 그대로 통과시키고 `layer_off(MOUSE)`. 숫자열(NUM_F)·Space(LT)는
+  keycode 형태가 달라 각자 분기에서 처리(Space 는 LT tap 일 때만). encoder/마우스/NAV/modifier 는
+  비대상이고, Ctrl/Alt/GUI 단축키 조합(예: Ctrl+C/V) 중에는 OFF 하지 않음.
 - **코어 패치** `quantum/mousekey.c`: kinetic `mouse_timer` 를 이동/휠 키에서만 시작하도록 수정
   (마우스 버튼을 오래 누른 뒤 이동 시 커서가 튀는 버그 수정). `upstream` 머지 시 충돌 나면 재적용.
 
@@ -173,6 +177,9 @@ push 하면 GitHub Actions 가 4개 보드를 빌드해 `.bin`/`.hex` artifact �
 - [ ] MOUSE: Space 홀드로 NAV 사용 중 auto-off 안 일어남
 - [ ] MOUSE: I/J/K/L 이동·D/F 클릭·휠 = MOUSE 유지
 - [ ] MOUSE: A/숫자/기호 입력 = 해당 키 입력 + MOUSE OFF (한/영 상태 무관)
+- [ ] MOUSE: 우측 Alt(한/영) = 한/영 전환 + MOUSE OFF
+- [ ] MOUSE: Ctrl+C/Ctrl+V 등 Ctrl/Alt/GUI 단축키 중에는 MOUSE 유지 (auto-off 안 됨)
+- [ ] MOUSE: Shift+글자 = 대문자 입력 + MOUSE OFF (Shift 는 단축키 예외 아님)
 - [ ] MOUSE: modifier/media/layer/custom 키는 auto-off 오판 없음
 - [ ] BASE/NAV/MOUSE knob 회전 = 볼륨, 클릭 = 음소거 (MOUSE 휠 매핑 제거)
 - [ ] MOUSE 에서 knob 회전/클릭으로 MOUSE 자동 OFF 안 됨

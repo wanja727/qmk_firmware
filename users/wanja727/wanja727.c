@@ -36,7 +36,7 @@ static bool    alt_tab_active = false;
 static uint8_t alt_tab_layer  = 0;
 
 // MOUSE 레이어에서 누르면 "해당 키 입력 + 자동 BASE 복귀(layer_off)" 대상인 '문자 입력' 키인가?
-//  - 알파벳/숫자/기호/Space 만 대상.
+//  - 알파벳/숫자/기호/Space + 우측 Alt(한/영키, 타이핑 의사) 가 대상.
 //  - 마우스/NAV/modifier/media/layer/encoder 키는 대상 아님(여기서 false).
 //  - 숫자열(NUM_F*)·Space(LT)는 keycode 형태가 달라 별도 분기에서 처리한다.
 static bool is_text_input_key(uint16_t keycode) {
@@ -45,9 +45,20 @@ static bool is_text_input_key(uint16_t keycode) {
         case KC_MINS: case KC_EQL:  case KC_LBRC: case KC_RBRC:
         case KC_BSLS: case KC_SCLN: case KC_QUOT: case KC_GRV:
         case KC_COMM: case KC_DOT:  case KC_SLSH: case KC_SPC:
+        case KC_RALT: // 우측 Alt = 한/영(OS) — 누르는 행위 자체가 타이핑 의사
             return true;
     }
     return false;
+}
+
+// MOUSE auto-off 를 적용할 상태인가?
+//  - MOUSE 활성 & NAV 비활성이어야 하고,
+//  - Ctrl/Alt/GUI 가 눌려 있으면(=단축키 조합, 예: Ctrl+C/Ctrl+V) auto-off 하지 않는다.
+//    (Shift 는 제외: Shift+글자 = 대문자라 여전히 '문자 입력'으로 보고 auto-off 유지)
+static bool mouse_auto_off_armed(uint8_t nav_layer, uint8_t mouse_layer) {
+    if (!layer_state_is(mouse_layer) || layer_state_is(nav_layer)) return false;
+    if (get_mods() & (MOD_MASK_CTRL | MOD_MASK_ALT | MOD_MASK_GUI)) return false;
+    return true;
 }
 
 bool wanja_process_record(uint16_t keycode, keyrecord_t *record, uint8_t nav_layer, uint8_t mouse_layer) {
@@ -76,8 +87,8 @@ bool wanja_process_record(uint16_t keycode, keyrecord_t *record, uint8_t nav_lay
             numf_held[idx] = false;
             if (!numf_sent[idx]) {
                 tap_code16(tap_kc[idx]); // tap = 숫자/기호 (문자 입력)
-                // 문자 입력 -> MOUSE 자동 OFF (NAV 사용 중에는 제외)
-                if (layer_state_is(mouse_layer) && !layer_state_is(nav_layer)) {
+                // 문자 입력 -> MOUSE 자동 OFF (NAV 사용 중·단축키 조합 중에는 제외)
+                if (mouse_auto_off_armed(nav_layer, mouse_layer)) {
                     layer_off(mouse_layer);
                 }
             }
@@ -165,19 +176,19 @@ bool wanja_process_record(uint16_t keycode, keyrecord_t *record, uint8_t nav_lay
     if (keycode == (uint16_t)(QK_LAYER_TAP | (((uint16_t)nav_layer & 0xF) << 8) | KC_SPC)) {
         if (!record->event.pressed && record->tap.count > 0) {
             // tap 으로 확정 (실제 Space 는 LT 코어가 입력). 문자 입력이므로 MOUSE OFF.
-            if (layer_state_is(mouse_layer) && !layer_state_is(nav_layer)) {
+            if (mouse_auto_off_armed(nav_layer, mouse_layer)) {
                 layer_off(mouse_layer);
             }
         }
         return true; // LT 기본 처리(tap=Space, hold=NAV)에 맡긴다
     }
 
-    // --- 문자 입력 키 auto-off: MOUSE 활성 & NAV 비활성일 때만, 문자 입력 키면 ---
+    // --- 문자 입력 키 auto-off ---
+    //   MOUSE 활성 & NAV 비활성 & (단축키 modifier 미사용) 이고 문자 입력 키면,
     //   해당 키는 그대로 입력되고(return true) MOUSE 레이어는 OFF 되어 BASE 로 복귀.
     if (record->event.pressed
-        && layer_state_is(mouse_layer)
-        && !layer_state_is(nav_layer)
-        && is_text_input_key(keycode)) {
+        && is_text_input_key(keycode)
+        && mouse_auto_off_armed(nav_layer, mouse_layer)) {
         layer_off(mouse_layer);
     }
 
